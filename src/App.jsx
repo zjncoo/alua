@@ -110,21 +110,21 @@ const App = () => {
             />
           </div>
 
-          <p className="text-[0.6rem] uppercase tracking-widest text-gray-400 text-center">Identity Verification Protocol</p>
+          <p className="text-[0.6rem] uppercase tracking-widest text-gray-400 text-center">Protocollo Verifica Identità</p>
 
           {/* Dati Macchina */}
           <div className="w-full bg-gray-50 border border-gray-100 p-4 rounded-sm space-y-2 mt-8">
             <div className="flex items-center gap-2 text-gray-400 border-b border-gray-200 pb-2 mb-2">
                <Server size={12} />
-               <span className="text-[0.5rem] uppercase tracking-widest">Source Data</span>
+               <span className="text-[0.5rem] uppercase tracking-widest">Dati Sorgente</span>
             </div>
             <div className="grid grid-cols-2 gap-4">
                <div>
-                 <span className="block text-[0.5rem] uppercase text-gray-400">Contract Ref</span>
+                 <span className="block text-[0.5rem] uppercase text-gray-400">Rif. Contratto</span>
                  <span className="font-mono text-xs">{machineData.contractRef}</span>
                </div>
                <div className="text-right">
-                 <span className="block text-[0.5rem] uppercase text-gray-400">Machine ID</span>
+                 <span className="block text-[0.5rem] uppercase text-gray-400">ID Macchina</span>
                  <span className="font-mono text-xs">{machineData.machineId}</span>
                </div>
             </div>
@@ -134,23 +134,23 @@ const App = () => {
           <form onSubmit={handleLogin} className="space-y-6 w-full">
             <div className="space-y-4">
               <div className="relative group">
-                <label className="text-[0.6rem] uppercase font-bold tracking-widest mb-1 block ml-1 text-gray-500">Subject A</label>
+                <label className="text-[0.6rem] uppercase font-bold tracking-widest mb-1 block ml-1 text-gray-500">Soggetto A</label>
                 <input 
                   type="text" 
                   value={partyA}
                   onChange={(e) => setPartyA(e.target.value.toUpperCase())}
-                  placeholder="Enter Name..."
+                  placeholder="Inserisci Nome..."
                   className="w-full bg-transparent border-b border-black/20 py-3 px-1 text-lg font-mono focus:outline-none focus:border-black transition-colors uppercase placeholder:text-gray-300"
                   required
                 />
               </div>
               <div className="relative group">
-                <label className="text-[0.6rem] uppercase font-bold tracking-widest mb-1 block ml-1 text-gray-500">Subject B</label>
+                <label className="text-[0.6rem] uppercase font-bold tracking-widest mb-1 block ml-1 text-gray-500">Soggetto B</label>
                 <input 
                   type="text" 
                   value={partyB}
                   onChange={(e) => setPartyB(e.target.value.toUpperCase())}
-                  placeholder="Enter Name..."
+                  placeholder="Inserisci Nome..."
                   className="w-full bg-transparent border-b border-black/20 py-3 px-1 text-lg font-mono focus:outline-none focus:border-black transition-colors uppercase placeholder:text-gray-300"
                   required
                 />
@@ -161,7 +161,7 @@ const App = () => {
               type="submit" 
               className="w-full bg-black text-white py-4 mt-8 flex items-center justify-center gap-2 hover:bg-gray-800 transition-all active:scale-[0.98]"
             >
-              <span className="text-xs font-bold tracking-[0.2em] uppercase">Initialize Session</span>
+              <span className="text-xs font-bold tracking-[0.2em] uppercase">Inizializza Sessione</span>
               <ArrowRight size={14} />
             </button>
           </form>
@@ -193,7 +193,7 @@ const App = () => {
           <div className="flex items-center space-x-2">
             <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${systemStatus === 'MONITORING' ? 'bg-green-400 animate-pulse' : 'bg-yellow-500'}`}></div>
             <p className="text-[0.5rem] uppercase tracking-widest text-gray-500">
-              {systemStatus === 'MONITORING' ? 'System Active' : 'Processing Claim'}
+              {systemStatus === 'MONITORING' ? 'Sistema Attivo' : 'Elaborazione Sinistro'}
             </p>
           </div>
         </div>
@@ -218,28 +218,28 @@ const App = () => {
            
            <div className="flex justify-between items-start mb-6 border-b border-gray-50 pb-4">
               <div>
-                <span className="text-[0.5rem] uppercase tracking-widest text-gray-400 block mb-1">Linked Contract</span>
+                <span className="text-[0.5rem] uppercase tracking-widest text-gray-400 block mb-1">Contratto Collegato</span>
                 <span className="font-mono text-sm tracking-wider">{machineData.contractRef}</span>
               </div>
               <button 
                 onClick={() => setShowContract(true)} 
                 className="bg-gray-50 hover:bg-black hover:text-white transition-colors px-3 py-1 text-[0.5rem] uppercase tracking-widest border border-gray-100 rounded-full flex items-center gap-1"
               >
-                <FileText size={10} /> View Rules
+                <FileText size={10} /> Consulta Contratto
               </button>
            </div>
 
            <div className="grid grid-cols-1 gap-4">
               <div className="flex items-center justify-between">
                   <div className="flex flex-col">
-                      <span className="text-[0.45rem] uppercase tracking-widest text-gray-400 mb-1 flex items-center gap-1">Subject A</span>
+                      <span className="text-[0.45rem] uppercase tracking-widest text-gray-400 mb-1 flex items-center gap-1">Soggetto A</span>
                       <span className="font-mono text-sm font-bold truncate uppercase">{partyA}</span>
                   </div>
                   <Users size={12} className="text-gray-200"/>
               </div>
               <div className="flex items-center justify-between">
                   <div className="flex flex-col">
-                      <span className="text-[0.45rem] uppercase tracking-widest text-gray-400 mb-1 flex items-center gap-1">Subject B</span>
+                      <span className="text-[0.45rem] uppercase tracking-widest text-gray-400 mb-1 flex items-center gap-1">Soggetto B</span>
                       <span className="font-mono text-sm font-bold truncate uppercase">{partyB}</span>
                   </div>
                   <Users size={12} className="text-gray-200"/>
@@ -253,18 +253,18 @@ const App = () => {
            <div className="mb-8 text-center px-8 h-16 flex items-center justify-center">
              {systemStatus === 'MONITORING' ? (
                <div className="text-[0.6rem] uppercase tracking-[0.15em] text-gray-500 leading-loose">
-                  Tap button to log<br/>
-                  <span className="text-black font-bold">contractual violation</span>
+                  Premi per segnalare<br/>
+                  <span className="text-black font-bold">violazione contrattuale</span>
                </div>
              ) : (
                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white border border-gray-100 p-4 shadow-sm w-full max-w-xs text-left">
                   <div className="flex items-center gap-2 text-yellow-600 mb-2 border-b border-gray-50 pb-2">
                      <Activity size={14} />
-                     <span className="text-[0.6rem] font-bold uppercase tracking-widest">Report Logged</span>
+                     <span className="text-[0.6rem] font-bold uppercase tracking-widest">Segnalazione Registrata</span>
                   </div>
                   <p className="font-mono text-[0.55rem] text-gray-400 leading-relaxed">
                      TOKEN: {machineData.sessionToken}<br/>
-                     STATUS: UPLOADING EVIDENCE...
+                     STATO: CARICAMENTO PROVE...
                   </p>
                </div>
              )}
@@ -296,7 +296,8 @@ const App = () => {
                     {systemStatus === 'MONITORING' && (
                       <>
                         <AlertTriangle size={28} className="text-white mb-2" strokeWidth={1.5} />
-                        <span className="text-white font-mono text-[0.6rem] tracking-[0.2em] font-bold">REPORT</span>
+                        <span className="text-white font-mono text-[0.6rem] tracking-[0.2em] font-bold">SEGNALA</span>
+                        <span className="text-white/60 font-mono text-[0.4rem] tracking-[0.15em] font-medium mt-1">VIOLAZIONE</span>
                       </>
                     )}
                     {systemStatus === 'REPORTED' && (
@@ -312,10 +313,10 @@ const App = () => {
       {/* Footer Fisso */}
       <footer className="px-6 py-4 border-t border-gray-100 bg-white text-black flex justify-between items-center text-[0.5rem] uppercase tracking-widest">
         <div className="flex flex-col text-gray-400">
-           <span>Unit ID: {machineData.machineId}</span>
+           <span>ID Unità: {machineData.machineId}</span>
         </div>
         {systemStatus === 'REPORTED' && (
-           <button onClick={resetSystem} className="underline hover:text-red-600">New Report</button>
+           <button onClick={resetSystem} className="underline hover:text-red-600">Nuova Segnalazione</button>
         )}
       </footer>
 
@@ -325,26 +326,26 @@ const App = () => {
            <div className="p-6 border-b border-gray-100 flex justify-between items-center">
               <div className="flex items-center gap-2">
                  <Database size={14} />
-                 <span className="text-[0.6rem] font-bold tracking-[0.2em] uppercase">Contract Data</span>
+                 <span className="text-[0.6rem] font-bold tracking-[0.2em] uppercase">Dati Contratto</span>
               </div>
               <button onClick={() => setShowContract(false)} className="p-2 hover:bg-gray-100 rounded-full">
                 <X size={18} />
               </button>
            </div>
            <div className="flex-1 overflow-y-auto p-8 font-mono text-xs text-gray-600 space-y-6 leading-relaxed">
-              <p className="text-black font-bold border-b border-black pb-2">CONTRACT {machineData.contractRef}</p>
+              <p className="text-black font-bold border-b border-black pb-2">CONTRATTO {machineData.contractRef}</p>
               <p>
-                <strong>PARTIES:</strong><br/>
-                A: {partyA || 'UNDEFINED'}<br/>
-                B: {partyB || 'UNDEFINED'}
+                <strong>PARTI:</strong><br/>
+                A: {partyA || 'NON DEFINITO'}<br/>
+                B: {partyB || 'NON DEFINITO'}
               </p>
               <p>
-                <strong>PROTOCOL:</strong><br/>
-                This digital interface serves as a binding communication channel for reporting behavioral deviations.
+                <strong>PROTOCOLLO:</strong><br/>
+                Questa interfaccia digitale funge da canale di comunicazione vincolante per la segnalazione di deviazioni comportamentali.
               </p>
               <p className="text-[0.6rem] text-gray-400 mt-8">
-                GENERATED BY ALUA SYSTEMS.<br/>
-                SESSION TOKEN: {machineData.sessionToken}
+                GENERATO DA ALUA SYSTEMS.<br/>
+                TOKEN SESSIONE: {machineData.sessionToken}
               </p>
            </div>
         </div>
