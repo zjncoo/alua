@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle } from 'lucide-react'; // Re-import AlertTriangle
+import { AlertTriangle, FileText, ArrowRight, ShieldCheck, Activity, Users, Server, Database, X, LogOut } from 'lucide-react';
 
 const App = () => {
   // Stati dell'app
@@ -109,7 +109,7 @@ const App = () => {
         </style>
         <div className="w-full max-w-md space-y-12 animate-in fade-in duration-700 flex flex-col items-start">
           
-          {/* LOGO ALUA (Text-based for clean aesthetic) */}
+          {/* LOGO ALUA (Text-based per estetica pulita) */}
           <div className="mb-2 w-full border-b-2 border-black pb-4">
             <h1 className="text-6xl font-bold tracking-tighter font-neue-haas text-black">ALUA</h1>
           </div>
