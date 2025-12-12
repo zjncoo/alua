@@ -106,9 +106,9 @@ const App = () => {
     const q_id = params.get('id') || '8X99-REL-04';
     const q_comp = parseInt(params.get('comp') || '50');
     const q_bad = parseInt(params.get('bad') || '-1');
-    const q_fuscia = parseInt(params.get('fascia') || '1');
-    const q_scl0 = parseInt(params.get('scl0') || params.get('gsr0') || '0');
-    const q_scl1 = parseInt(params.get('scl1') || params.get('gsr1') || '0');
+    const q_fascia = parseInt(params.get('fascia') || '1');
+    const q_scl0 = parseInt(params.get('scl0') || '0');
+    const q_scl1 = parseInt(params.get('scl1') || '0');
 
     // Parsing Bottoni -> Clausole
     const btn0_idx = (params.get('btn0') || '').split(',').filter(x => x).map(Number);
