@@ -87,18 +87,27 @@ const App = () => {
   });
 
   // --- EFFETTO 1: INIZIALIZZAZIONE E PARSING URL ---
+  const [debugParams, setDebugParams] = useState({});
+
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
 
     const params = new URLSearchParams(window.location.search);
+
+    // DEBUG: Save all params to state
+    const debugObj = {};
+    for (const [key, value] of params.entries()) {
+      debugObj[key] = value;
+    }
+    setDebugParams(debugObj);
 
     // --- PARSING PARAMETRI QR ---
     const q_id = params.get('id') || '8X99-REL-04';
     const q_comp = parseInt(params.get('comp') || '50');
     const q_bad = parseInt(params.get('bad') || '-1');
     const q_fascia = parseInt(params.get('fascia') || '1');
-    const q_gsr0 = parseInt(params.get('gsr0') || '0');
-    const q_gsr1 = parseInt(params.get('gsr1') || '0');
+    const q_scl0 = parseInt(params.get('scl0') || '0');
+    const q_scl1 = parseInt(params.get('scl1') || '0');
 
     // Parsing Bottoni -> Clausole
     const btn0_idx = (params.get('btn0') || '').split(',').filter(x => x).map(Number);
@@ -125,7 +134,7 @@ const App = () => {
       riskBand: q_fascia,
       weakLink: q_bad,
       clausesText: generatedClause,
-      rawScl: { a: q_gsr0, b: q_gsr1 }
+      rawScl: { a: q_scl0, b: q_scl1 }
     });
 
     // Gestione Nomi (QR vs Memoria)
@@ -500,6 +509,12 @@ const App = () => {
                 </p>
               </div>
             )}
+
+            {/* --- DEBUG DATA SECTION --- */}
+            <div className="mt-12 p-4 bg-gray-100 border border-gray-300 font-mono text-[10px] text-gray-600">
+              <p className="font-bold mb-2">DEBUG INFO (RAW PARAMS):</p>
+              <pre className="whitespace-pre-wrap">{JSON.stringify(debugParams, null, 2)}</pre>
+            </div>
 
             {/* Footer Digitale */}
             <div className="pt-12 mt-8 text-center border-t border-gray-100">
