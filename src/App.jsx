@@ -13,6 +13,55 @@ const CLAUSE_MAPPING = {
 
 const RELAZIONI_KEYS = ['CONOSCENZA', 'ROMANTICA', 'PROFESSIONALE', 'AMICIZIA', 'FAMILIARE', 'INTIMO'];
 
+const LissajousFigure = ({ gsr0, gsr1, compatibility }) => {
+  const canvasRef = React.useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+
+    // 1. Parametri (Esattamente come lissajous.py)
+    // val_gsr è la media, qui usiamo la media di gsr0 e gsr1 passati
+    const val_gsr = (gsr0 + gsr1) / 2;
+    const val_compat = compatibility;
+
+    const freq_x = 1 + Math.floor((val_gsr / 1000.0) * 9);
+    let freq_y = freq_x + 1;
+    if (freq_y === freq_x) freq_y += 1;
+
+    const delta = (val_compat / 100.0) * Math.PI + 0.1;
+
+    // 2. Rendering
+    ctx.clearRect(0, 0, width, height);
+    ctx.beginPath();
+    ctx.strokeStyle = '#000000'; // Nero (o rosso come in python? Python usa rosso, qui layout è BW)
+    ctx.lineWidth = 2;
+
+    const cx = width / 2;
+    const cy = height / 2;
+    const radius = (Math.min(width, height) / 2) - 10; // Padding
+    const steps = 1000;
+
+    for (let i = 0; i <= steps; i++) {
+      const t = (i / steps) * 2 * Math.PI;
+      // x = sin(freq_x * t + delta)
+      // y = sin(freq_y * t)
+      const x = cx + radius * Math.sin(freq_x * t + delta);
+      const y = cy + radius * Math.sin(freq_y * t);
+
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+  }, [gsr0, gsr1, compatibility]);
+
+  return <canvas ref={canvasRef} width={256} height={256} className="w-full h-full" />;
+};
+
 const App = () => {
   // Stati dell'app
   const [view, setView] = useState('LOGIN'); // LOGIN o DASHBOARD
@@ -404,6 +453,25 @@ const App = () => {
                 <span className="block text-4xl font-bold font-neue-haas">{contractData.riskBand}</span>
                 <span className="text-[10px] uppercase tracking-widest text-gray-500">Fascia Rischio</span>
               </div>
+            </div>
+
+            {/* GRAFICO LISSAJOUS */}
+            <div className="flex flex-col items-center justify-center space-y-4">
+              <div className="flex items-center gap-2 mb-2 w-full">
+                <div className="w-2 h-2 bg-black"></div>
+                <span className="text-sm font-bold uppercase tracking-widest font-neue-haas">Risonanza Emotiva (Lissajous)</span>
+              </div>
+
+              <div className="w-64 h-64 relative border border-gray-200 bg-white">
+                <LissajousFigure
+                  gsr0={contractData.rawScl.a}
+                  gsr1={contractData.rawScl.b}
+                  compatibility={contractData.compatibility}
+                />
+              </div>
+              <p className="text-[10px] uppercase tracking-widest text-gray-400 text-center max-w-xs">
+                Visualizzazione generativa basata sui valori SCL medi e sulla compatibilità rilevata.
+              </p>
             </div>
 
             {/* Clausole */}
