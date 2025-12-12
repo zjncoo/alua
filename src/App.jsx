@@ -88,6 +88,7 @@ const App = () => {
 
   // --- EFFETTO 1: INIZIALIZZAZIONE E PARSING URL ---
   const [debugParams, setDebugParams] = useState({});
+  const [missingData, setMissingData] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -142,6 +143,12 @@ const App = () => {
     const urlPartyB = params.get('partyB_name');
     const storedPartyA = localStorage.getItem('alua_partyA');
     const storedPartyB = localStorage.getItem('alua_partyB');
+
+    // CHECK DATA PRESENCE
+    // Se comp non c'è, significa che stiamo usando i default.
+    if (!params.get('comp')) {
+      setMissingData(true);
+    }
 
     if (urlPartyA && urlPartyB) {
       setPartyA(urlPartyA);
@@ -526,6 +533,13 @@ const App = () => {
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* WARNING OVERLAY: DATI MANCANTI */}
+      {missingData && (
+        <div className="fixed top-0 left-0 w-full bg-red-600 text-white z-[100] p-4 text-center font-bold uppercase tracking-widest text-xs animate-pulse">
+          ⚠️ ATTENZIONE: NESSUN DATO DAL QR (USA DEFAULT)
         </div>
       )}
     </div>
