@@ -89,7 +89,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
     >
       {/* HEADER */}
       <div className="w-full flex justify-between items-center pt-16 mb-2 px-4">
-        <img src="/logo_alua.svg" alt="ALUA" className="h-[100px] w-auto object-contain" />
+        <img src="/logo_alua.svg" alt="ALUA" className="h-[130px] w-auto object-contain" />
         <div className="text-right flex flex-col justify-center">
           <span className="text-3xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
           <span className="text-4xl font-bold uppercase tracking-widest mt-2">EyeDeal di ALUA</span>
@@ -112,7 +112,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         </div>
 
         {/* STATS: COMPATIBILITA' + FASCIA */}
-        <div className="flex flex-col items-center w-full mt-8">
+        <div className="flex flex-col items-center w-full mt-0">
           <span className="block text-3xl uppercase tracking-[0.3em] text-gray-500 mb-4">Grado di Compatibilità</span>
           {/* RIMOSSO BOLD */}
           <span className="block text-[180px] font-bergen-mono leading-none tracking-tighter">{contractData.compatibility}%</span>
@@ -126,7 +126,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         </div>
 
         {/* LISSAJOUS (Ridotto spazio e dimensione) */}
-        <div className="w-[400px] h-[400px] relative mt-0 border border-gray-100 rounded-full bg-white">
+        <div className="w-[400px] h-[400px] relative mt-0 border border-gray-100 rounded-full bg-white p-8">
           <LissajousFigure
             gsr0={contractData.avgScl.a}
             gsr1={contractData.avgScl.b}
@@ -146,7 +146,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       </div>
 
       {/* FOOTER */}
-      <div className="w-full text-center border-t-[4px] border-black pt-8 mt-4 flex flex-col gap-4 px-12 pb-16">
+      <div className="w-full text-left border-t-[4px] border-black pt-8 mt-4 flex flex-col gap-4 px-12 pb-16">
         <span className="text-3xl uppercase tracking-widest text-gray-400 font-medium whitespace-normal leading-relaxed">
           Analisi generativa basata su parametri biometrici reali: Conduttanza Cutanea (GSR) e Capacità Elettrica.
         </span>
