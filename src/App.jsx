@@ -88,9 +88,9 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       style={{ width: '1080px', height: '1920px', zIndex: -1 }} // 1080x1920 PX canvas
     >
       {/* HEADER */}
-      <div className="w-full flex justify-between items-start pt-8 mb-12 px-4">
-        <img src="/logo_alua.svg" alt="ALUA" className="h-[140px] w-auto" />
-        <div className="text-right flex flex-col justify-center h-[140px]">
+      <div className="w-full flex justify-between items-center pt-8 mb-12 px-8">
+        <img src="/logo_alua.svg" alt="ALUA" className="h-[220px] w-auto" />
+        <div className="text-right flex flex-col justify-center">
           <span className="text-xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
           <span className="text-2xl font-bold uppercase tracking-widest mt-1">EyeDeal di ALUA</span>
         </div>
@@ -116,9 +116,9 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
           <span className="block text-3xl uppercase tracking-[0.3em] text-gray-500 mb-4">Grado di Compatibilità</span>
           <span className="block text-[180px] font-bold font-bergen-mono leading-none tracking-tighter">{contractData.compatibility}%</span>
 
-          <div className="flex items-center gap-4 mt-6">
+          <div className="flex items-center gap-6 mt-6">
             <span className="text-3xl uppercase tracking-widest text-gray-400">Fascia Rischio</span>
-            <span className="text-4xl font-bold px-4 py-2 border-2 border-black bg-black text-white rounded-md min-w-[80px] text-center font-bergen-mono">
+            <span className="text-7xl font-bold text-black font-bergen-mono">
               {toRoman(contractData.riskBand)}
             </span>
           </div>
@@ -145,8 +145,8 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       </div>
 
       {/* FOOTER */}
-      <div className="w-full text-center border-t-[4px] border-black pt-8 mt-8 flex flex-col gap-4">
-        <span className="text-xl uppercase tracking-widest text-gray-400 font-medium max-w-3xl mx-auto">
+      <div className="w-full text-center border-t-[4px] border-black pt-8 mt-8 flex flex-col gap-4 px-12">
+        <span className="text-lg uppercase tracking-widest text-gray-400 font-medium whitespace-normal leading-relaxed">
           Analisi generativa basata su parametri biometrici reali: Conduttanza Cutanea (GSR) e Capacità Elettrica.
         </span>
         <span className="text-2xl uppercase tracking-[0.2em] text-gray-300">
