@@ -52,7 +52,7 @@ const LissajousFigure = ({ gsr0, gsr1, compatibility }) => {
       // x = sin(freq_x * t + delta)
       // y = sin(freq_y * t)
       const x = cx + radius * Math.sin(freq_x * t + delta);
-      const y = cy + radius * Math.sin(freq_y * t);
+      const y = cy - radius * Math.sin(freq_y * t);
 
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
@@ -118,8 +118,8 @@ const App = () => {
     // Parsing SCL e Medie
     const q_scl0 = parseInt(params.get('scl0') || '0');
     const q_scl1 = parseInt(params.get('scl1') || '0');
-    const q_avg0 = parseInt(params.get('avg0') || params.get('scl0') || '0');
-    const q_avg1 = parseInt(params.get('avg1') || params.get('scl1') || '0');
+    const q_avg0 = parseFloat(params.get('avg0') || params.get('scl0') || '0');
+    const q_avg1 = parseFloat(params.get('avg1') || params.get('scl1') || '0');
 
     // Parsing Clausole (RAW TYPES separati da virgola)
     const raw_types = (params.get('types') || '').split(',').filter(x => x);
