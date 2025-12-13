@@ -177,6 +177,8 @@ const App = () => {
   const [isPressed, setIsPressed] = useState(false);
   const [showContract, setShowContract] = useState(false);
   const [time, setTime] = useState(new Date());
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false); // Stato Prompt Installazione
+  const [doNotShowAgain, setDoNotShowAgain] = useState(false); // Checkbox "Non mostrare più"
 
   // Dati Sessione
   const [partyA, setPartyA] = useState('');
@@ -288,6 +290,29 @@ const App = () => {
 
     return () => clearInterval(timer);
   }, []);
+
+  // --- EFFETTO 2: INSTALL PROMPT CHECK ---
+  useEffect(() => {
+    // Verifica se l'app è già in modalità standalone (PWA installata)
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+    // Verifica se l'utente ha già visto il messaggio
+    const hasSeenPrompt = localStorage.getItem('alua_install_prompt_seen');
+
+    // Se NON è standalone e NON l'ha mai visto, mostra il prompt
+    if (!isStandalone && !hasSeenPrompt) {
+      // Delay per non apparire subito aggressivamente
+      const timer = setTimeout(() => setShowInstallPrompt(true), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  const handleDismissInstall = () => {
+    if (doNotShowAgain) {
+      localStorage.setItem('alua_install_prompt_seen', 'true');
+    }
+    setShowInstallPrompt(false);
+  };
 
   const handleLogin = (e) => {
     e.preventDefault();
@@ -768,6 +793,56 @@ const App = () => {
       {missingData && (
         <div className="fixed top-0 left-0 w-full bg-red-600 text-white z-[100] p-4 text-center font-bold uppercase tracking-widest text-xs animate-pulse">
           ⚠️ ATTENZIONE: NESSUN DATO DAL QR (USA DEFAULT)
+        </div>
+      )}
+
+      {/* INSTALL PROMPT OVERLAY (iOS Style) */}
+      {showInstallPrompt && (
+        <div className="fixed bottom-0 left-0 w-full z-[100] px-4 pb-6 pt-2 animate-in slide-in-from-bottom duration-500">
+          <div className="bg-white border-2 border-black p-6 shadow-2xl flex flex-col gap-4 relative">
+            <button
+              onClick={handleDismissInstall}
+              className="absolute top-2 right-2 p-2 hover:bg-gray-100 rounded-full"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
+              <div className="w-12 h-12 bg-black flex items-center justify-center text-white">
+                <img src="/logo_alua.svg" alt="App Icon" className="w-8 h-8 invert" />
+              </div>
+              <div>
+                <h3 className="font-bold text-sm uppercase tracking-widest font-neue-haas">Installa Applicazione</h3>
+                <p className="text-xs text-gray-500 font-bergen-mono">Per la migliore esperienza ALUA</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs font-bergen-mono uppercase tracking-wide text-gray-600">
+              <div className="flex items-center gap-3">
+                <span className="font-bold text-black">1.</span>
+                <span>Tocca l'icona <Share size={14} className="inline mx-1 align-text-bottom" /> nella barra in basso</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="font-bold text-black">2.</span>
+                <span>Scorri e seleziona <span className="font-bold text-black border-b border-black">Aggiungi alla Home</span></span>
+              </div>
+            </div>
+
+            {/* Checkbox Non Mostrare Più */}
+            <div className="flex items-center gap-2 mt-2 cursor-pointer" onClick={() => setDoNotShowAgain(!doNotShowAgain)}>
+              <div className={`w-4 h-4 border border-black flex items-center justify-center ${doNotShowAgain ? 'bg-black' : 'bg-white'}`}>
+                {doNotShowAgain && <CheckCircle size={10} className="text-white" />}
+              </div>
+              <span className="text-[10px] uppercase font-bergen-mono text-gray-500 select-none">Non mostrare più questo messaggio</span>
+            </div>
+
+            <button
+              onClick={handleDismissInstall}
+              className="w-full bg-black text-white py-3 mt-0 text-xs uppercase tracking-widest font-bold font-neue-haas hover:bg-gray-900"
+            >
+              Ho Capito
+            </button>
+          </div>
         </div>
       )}
 
