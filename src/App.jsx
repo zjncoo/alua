@@ -79,10 +79,12 @@ const App = () => {
   // Dati Contratto (Ricostruiti da QR)
   const [contractData, setContractData] = useState({
     id: 'UNK-00', // da 'id'
+    date: '00.00.0000', // da 'date'
     machineId: 'ALUA-M-V1',
     sessionToken: '---',
     compatibility: 0, // da 'comp'
     riskBand: 1, // da 'fascia'
+    cost: '0,00€', // da 'cost'
     weakLink: null, // da 'bad' (-1, 0, 1)
     clausesText: "Dati non disponibili.", // Ricostruito da btn0/btn1
     rawScl: { a: 0, b: 0 } // da gsr0/gsr1
@@ -104,40 +106,49 @@ const App = () => {
     }
     setDebugParams(debugObj);
 
-    // --- PARSING PARAMETRI QR ---
-    const q_id = params.get('id') || '8X99-REL-04';
+    // --- PARSING NUOVI PARAMETRI (Coerenza Totale) ---
+    const q_id = params.get('id') || 'UNK-00';
+    const q_date = params.get('date') || formattedDate;
     const q_comp = parseInt(params.get('comp') || '50');
     const q_bad = parseInt(params.get('bad') || '-1');
     const q_fascia = parseInt(params.get('fascia') || '1');
+    const q_cost = params.get('cost') || '0,00€';
+    // const q_phrase = params.get('phrase') || ""; // Se servisse visualizzarla
+
+    // Parsing SCL e Medie
     const q_scl0 = parseInt(params.get('scl0') || '0');
     const q_scl1 = parseInt(params.get('scl1') || '0');
-    // Nuovi parametri: Medie per Lissajous (se non presenti, fallback sui last values)
     const q_avg0 = parseInt(params.get('avg0') || params.get('scl0') || '0');
     const q_avg1 = parseInt(params.get('avg1') || params.get('scl1') || '0');
 
-    // Parsing Bottoni -> Clausole
-    const btn0_idx = (params.get('btn0') || '').split(',').filter(x => x).map(Number);
-    const btn1_idx = (params.get('btn1') || '').split(',').filter(x => x).map(Number);
+    // Parsing Clausole (RAW TYPES separati da virgola)
+    const raw_types = (params.get('types') || '').split(',').filter(x => x);
 
-    // Converti indici in chiavi (0->CONOSCENZA, ecc)
-    const keys0 = btn0_idx.map(i => RELAZIONI_KEYS[i]).filter(k => k);
-    const keys1 = btn1_idx.map(i => RELAZIONI_KEYS[i]).filter(k => k);
-
-    // Unisci e deduplica
-    const allbox = Array.from(new Set([...keys0, ...keys1]));
-
-    // Genera testo (Esattamente come in contract_generator.py: join con spazio, nessun prefisso extra)
-    let generatedClause = "";
-    if (allbox.length > 0) {
-      generatedClause = allbox.map(k => CLAUSE_MAPPING[k] || "").join(" ");
+    // Generazione testo diretta
+    let generatedClause = "Clausola Default: Relazione indefinita.";
+    if (raw_types.length > 0) {
+      // Mappa le chiavi raw nel testo usando la mappa definita (che ora è allineata a contract_generator)
+      generatedClause = raw_types.map(k => CLAUSE_MAPPING[k] || k).join(" ");
+    } else {
+      // Fallback vecchi QR (retrocompatibilità se necessario, o rimuovibile)
+      const btn0_idx = (params.get('btn0') || '').split(',').filter(x => x).map(Number);
+      const btn1_idx = (params.get('btn1') || '').split(',').filter(x => x).map(Number);
+      if (btn0_idx.length > 0 || btn1_idx.length > 0) {
+        const keys0 = btn0_idx.map(i => RELAZIONI_KEYS[i]).filter(k => k);
+        const keys1 = btn1_idx.map(i => RELAZIONI_KEYS[i]).filter(k => k);
+        const allbox = Array.from(new Set([...keys0, ...keys1]));
+        if (allbox.length > 0) generatedClause = allbox.map(k => CLAUSE_MAPPING[k] || "").join(" ");
+      }
     }
 
     setContractData({
       id: q_id,
+      date: q_date, // Nuova
       machineId: params.get('mid') || 'ALUA-M-V1',
       sessionToken: Math.random().toString(36).substr(2, 9).toUpperCase(),
       compatibility: q_comp,
       riskBand: q_fascia,
+      cost: q_cost, // Nuova
       weakLink: q_bad,
       clausesText: generatedClause,
       rawScl: { a: q_scl0, b: q_scl1 },
@@ -474,6 +485,7 @@ const App = () => {
               <div className="flex-1 text-center">
                 <span className="block text-4xl font-bold font-neue-haas">{contractData.riskBand}</span>
                 <span className="text-[10px] uppercase tracking-widest text-gray-500">Fascia Rischio</span>
+                <span className="block text-sm font-bold mt-2">{contractData.cost}</span>
               </div>
             </div>
 
@@ -535,7 +547,7 @@ const App = () => {
                 Certificato Digitalmente da ALUA Systems
               </p>
               <p className="text-[10px] text-gray-300 font-mono">
-                {contractData.sessionToken} • {new Date().toISOString()}
+                {contractData.sessionToken} • Stipulato il {contractData.date}
               </p>
             </div>
           </div>
