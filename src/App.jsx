@@ -51,7 +51,8 @@ const LissajousFigure = ({ gsr0, gsr1, compatibility }) => {
       const t = (i / steps) * 2 * Math.PI;
       // x = sin(freq_x * t + delta)
       // y = sin(freq_y * t)
-      const x = cx + radius * Math.sin(freq_x * t + delta);
+      // Mirroring Orizzontale requested: x = cx - ...
+      const x = cx - radius * Math.sin(freq_x * t + delta);
       const y = cy + radius * Math.sin(freq_y * t);
 
       if (i === 0) ctx.moveTo(x, y);
@@ -64,6 +65,20 @@ const LissajousFigure = ({ gsr0, gsr1, compatibility }) => {
   return <canvas ref={canvasRef} width={256} height={256} className="w-full h-full" />;
 };
 
+const toRoman = (num) => {
+  if (!num) return "";
+  const n = parseInt(num);
+  const lookup = { M: 1000, CM: 900, D: 500, CD: 400, C: 100, XC: 90, L: 50, XL: 40, X: 10, IX: 9, V: 5, IV: 4, I: 1 };
+  let roman = '', i;
+  for (i in lookup) {
+    while (n >= lookup[i]) {
+      roman += i;
+      n -= lookup[i];
+    }
+  }
+  return roman;
+}
+
 // TEMPLATE GRAFICO PER INSTAGRAM STORIES (Hidden but rendered)
 const StoryTemplate = ({ contractData, partyA, partyB }) => {
   return (
@@ -73,8 +88,12 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       style={{ width: '1080px', height: '1920px', zIndex: -1 }} // 1080x1920 PX canvas
     >
       {/* HEADER */}
-      <div className="w-full flex justify-center pt-8 mb-12">
-        <img src="/logo_alua.svg" alt="ALUA" className="h-[100px] w-auto" />
+      <div className="w-full flex justify-between items-start pt-8 mb-12 px-4">
+        <img src="/logo_alua.svg" alt="ALUA" className="h-[140px] w-auto" />
+        <div className="text-right flex flex-col justify-center h-[140px]">
+          <span className="text-xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
+          <span className="text-2xl font-bold uppercase tracking-widest mt-1">EyeDeal di ALUA</span>
+        </div>
       </div>
 
       {/* CONTENT */}
@@ -95,11 +114,13 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         {/* STATS: COMPATIBILITA' + FASCIA */}
         <div className="flex flex-col items-center w-full mt-8">
           <span className="block text-3xl uppercase tracking-[0.3em] text-gray-500 mb-4">Grado di Compatibilità</span>
-          <span className="block text-[180px] font-bold font-neue-haas leading-none tracking-tighter">{contractData.compatibility}%</span>
+          <span className="block text-[180px] font-bold font-bergen-mono leading-none tracking-tighter">{contractData.compatibility}%</span>
 
           <div className="flex items-center gap-4 mt-6">
             <span className="text-3xl uppercase tracking-widest text-gray-400">Fascia Rischio</span>
-            <span className="text-4xl font-bold px-4 py-2 border-2 border-black bg-black text-white rounded-md">{contractData.riskBand}</span>
+            <span className="text-4xl font-bold px-4 py-2 border-2 border-black bg-black text-white rounded-md min-w-[80px] text-center font-bergen-mono">
+              {toRoman(contractData.riskBand)}
+            </span>
           </div>
         </div>
 
@@ -124,8 +145,11 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       </div>
 
       {/* FOOTER */}
-      <div className="w-full text-center border-t-[4px] border-black pt-8 mt-8">
-        <span className="text-2xl uppercase tracking-[0.2em] text-gray-400">
+      <div className="w-full text-center border-t-[4px] border-black pt-8 mt-8 flex flex-col gap-4">
+        <span className="text-xl uppercase tracking-widest text-gray-400 font-medium max-w-3xl mx-auto">
+          Analisi generativa basata su parametri biometrici reali: Conduttanza Cutanea (GSR) e Capacità Elettrica.
+        </span>
+        <span className="text-2xl uppercase tracking-[0.2em] text-gray-300">
           Protocollo Verificato • {contractData.date}
         </span>
       </div>
