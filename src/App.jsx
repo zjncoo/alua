@@ -88,11 +88,11 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       style={{ width: '1080px', height: '1920px', zIndex: -1 }} // 1080x1920 PX canvas
     >
       {/* HEADER */}
-      <div className="w-full flex justify-between items-center pt-12 mb-4 px-8">
-        <img src="/icon.png" alt="ALUA" className="h-[200px] w-auto object-contain" />
+      <div className="w-full flex justify-between items-center pt-16 mb-2 px-8">
+        <img src="/icon.png" alt="ALUA" className="h-[220px] w-auto object-contain" />
         <div className="text-right flex flex-col justify-center">
-          <span className="text-xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
-          <span className="text-2xl font-bold uppercase tracking-widest mt-1">EyeDeal di ALUA</span>
+          <span className="text-3xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
+          <span className="text-4xl font-bold uppercase tracking-widest mt-2">EyeDeal di ALUA</span>
         </div>
       </div>
 
@@ -145,11 +145,11 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       </div>
 
       {/* FOOTER */}
-      <div className="w-full text-center border-t-[4px] border-black pt-8 mt-8 flex flex-col gap-4 px-12">
-        <span className="text-lg uppercase tracking-widest text-gray-400 font-medium whitespace-normal leading-relaxed">
+      <div className="w-full text-center border-t-[4px] border-black pt-8 mt-4 flex flex-col gap-4 px-12 pb-16">
+        <span className="text-3xl uppercase tracking-widest text-gray-400 font-medium whitespace-normal leading-relaxed">
           Analisi generativa basata su parametri biometrici reali: Conduttanza Cutanea (GSR) e Capacità Elettrica.
         </span>
-        <span className="text-2xl uppercase tracking-[0.2em] text-gray-300">
+        <span className="text-3xl uppercase tracking-[0.2em] text-gray-300">
           Protocollo Verificato • {contractData.date}
         </span>
       </div>
