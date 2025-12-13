@@ -51,9 +51,8 @@ const LissajousFigure = ({ gsr0, gsr1, compatibility }) => {
       const t = (i / steps) * 2 * Math.PI;
       // x = sin(freq_x * t + delta)
       // y = sin(freq_y * t)
-      // Mirroring Orizzontale requested: x = cx - ...
-      const x = cx - radius * Math.sin(freq_x * t + delta);
-      const y = cy + radius * Math.sin(freq_y * t);
+      const x = cx + radius * Math.sin(freq_x * t + delta);
+      const y = cy - radius * Math.sin(freq_y * t);
 
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
