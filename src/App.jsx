@@ -84,7 +84,8 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
   return (
     <div
       id="share-story-template"
-      className="fixed top-0 left-[-9999px] bg-white flex flex-col items-center justify-between p-16 font-bergen-mono text-black border-[20px] border-white"
+      className="absolute top-0 left-0 bg-white flex flex-col items-center justify-between p-16 font-bergen-mono text-black border-[20px] border-white"
+      style={{ width: '1080px', height: '1920px', zIndex: -100 }} // 1080x1920 PX canvas
     >
       {/* HEADER */}
       <div className="w-full flex justify-between items-center pt-16 mb-2 px-4">
@@ -330,7 +331,22 @@ const App = () => {
       const canvas = await window.html2canvas(element, {
         scale: 2, // 2x Scale per qualità Retina/HighDPI
         useCORS: true,
-        backgroundColor: "#ffffff"
+        backgroundColor: "#ffffff",
+        width: 1080,
+        height: 1920,
+        windowWidth: 1080,
+        windowHeight: 1920,
+        scrollX: 0,
+        scrollY: 0,
+        onclone: (clonedDoc) => {
+          // Fix eventuali problemi di display nel clone
+          const el = clonedDoc.getElementById('share-story-template');
+          if (el) {
+            el.style.display = 'flex';
+            el.style.left = '0px';
+            el.style.top = '0px';
+          }
+        }
       });
 
       canvas.toBlob(async (blob) => {
