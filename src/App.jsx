@@ -73,19 +73,38 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       style={{ width: '1080px', height: '1920px', zIndex: -1 }} // 1080x1920 PX canvas
     >
       {/* HEADER */}
-      <div className="w-full flex justify-between items-start border-b-[4px] border-black pb-8">
-        <img src="/logo_alua.svg" alt="ALUA" className="h-[120px] w-auto" />
-        <div className="text-right">
-          <span className="block text-4xl uppercase tracking-widest text-gray-400 mb-2">Protocollo</span>
-          <span className="block text-5xl font-bold">{contractData.id}</span>
-        </div>
+      <div className="w-full flex justify-center pt-8 mb-12">
+        <img src="/logo_alua.svg" alt="ALUA" className="h-[100px] w-auto" />
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 w-full flex flex-col items-center justify-center gap-16">
+      <div className="flex-1 w-full flex flex-col items-center justify-start gap-12">
 
-        {/* LARGE LISSAJOUS */}
-        <div className="w-[800px] h-[800px] relative">
+        {/* PARTIES (NOMI) - In alto ben visibili */}
+        <div className="w-full flex justify-between items-center px-4 border-b-[4px] border-black pb-12">
+          <div className="text-left w-1/2 pr-4">
+            <span className="block text-2xl uppercase tracking-widest text-gray-400 mb-2">Contraente A</span>
+            <span className="block text-5xl font-bold uppercase break-words leading-tight">{partyA}</span>
+          </div>
+          <div className="text-right w-1/2 pl-4">
+            <span className="block text-2xl uppercase tracking-widest text-gray-400 mb-2">Contraente B</span>
+            <span className="block text-5xl font-bold uppercase break-words leading-tight">{partyB}</span>
+          </div>
+        </div>
+
+        {/* STATS: COMPATIBILITA' + FASCIA */}
+        <div className="flex flex-col items-center w-full mt-8">
+          <span className="block text-3xl uppercase tracking-[0.3em] text-gray-500 mb-4">Grado di Compatibilità</span>
+          <span className="block text-[180px] font-bold font-neue-haas leading-none tracking-tighter">{contractData.compatibility}%</span>
+
+          <div className="flex items-center gap-4 mt-6">
+            <span className="text-3xl uppercase tracking-widest text-gray-400">Fascia Rischio</span>
+            <span className="text-4xl font-bold px-4 py-2 border-2 border-black bg-black text-white rounded-md">{contractData.riskBand}</span>
+          </div>
+        </div>
+
+        {/* LISSAJOUS (Ridotto) */}
+        <div className="w-[500px] h-[500px] relative my-8 p-8 border border-gray-100 rounded-full">
           <LissajousFigure
             gsr0={contractData.avgScl.a}
             gsr1={contractData.avgScl.b}
@@ -93,44 +112,21 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
           />
         </div>
 
-        {/* PHRASE */}
+        {/* PHRASE (Ridotta) */}
         {contractData.phrase && (
-          <div className="text-center px-8 border-t-[4px] border-b-[4px] border-black py-12 w-full">
-            <span className="font-bergen-mono text-[70px] uppercase font-bold leading-tight block">
-              {contractData.phrase}
+          <div className="text-center px-12 w-full max-w-[900px]">
+            <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-gray-800">
+              "{contractData.phrase}"
             </span>
+            <div className="w-24 h-2 bg-black mx-auto mt-8"></div>
           </div>
         )}
-
-        {/* STATS */}
-        <div className="grid grid-cols-2 gap-16 w-full text-center mt-8">
-          <div>
-            <span className="block text-4xl uppercase tracking-widest text-gray-400 mb-4">Compatibilità</span>
-            <span className="block text-[140px] font-bold font-neue-haas leading-none">{contractData.compatibility}%</span>
-          </div>
-          <div>
-            <span className="block text-4xl uppercase tracking-widest text-gray-400 mb-4">Rischio</span>
-            <span className="block text-[140px] font-bold font-neue-haas leading-none">{contractData.riskBand}</span>
-          </div>
-        </div>
-
-        {/* PARTIES */}
-        <div className="flex justify-between w-full mt-16 px-8">
-          <div className="text-left">
-            <span className="block text-3xl uppercase tracking-widest text-gray-400 mb-2">Contraente A</span>
-            <span className="block text-5xl font-bold uppercase">{partyA}</span>
-          </div>
-          <div className="text-right">
-            <span className="block text-3xl uppercase tracking-widest text-gray-400 mb-2">Contraente B</span>
-            <span className="block text-5xl font-bold uppercase">{partyB}</span>
-          </div>
-        </div>
       </div>
 
       {/* FOOTER */}
-      <div className="w-full text-center border-t-[4px] border-black pt-8">
-        <span className="text-3xl uppercase tracking-[0.2em] text-gray-500">
-          Certificato Digitalmente da ALUA
+      <div className="w-full text-center border-t-[4px] border-black pt-8 mt-8">
+        <span className="text-2xl uppercase tracking-[0.2em] text-gray-400">
+          Protocollo Verificato • {contractData.date}
         </span>
       </div>
     </div>
@@ -289,7 +285,7 @@ const App = () => {
     setSystemStatus('MONITORING');
   };
 
-  const formattedTime = time.toLocaleTimeString('it-IT', { hour12: false });
+  const formattedTime = time.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
   const formattedDate = time.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
   // Helper per Weak Link Text
@@ -308,7 +304,7 @@ const App = () => {
 
       // Usa html2canvas dalla finestra globale (CDN)
       const canvas = await window.html2canvas(element, {
-        scale: 1, // 1:1 perchè è già 1080px
+        scale: 2, // 2x Scale per qualità Retina/HighDPI
         useCORS: true,
         backgroundColor: "#ffffff"
       });
@@ -425,11 +421,9 @@ const App = () => {
       <header className="px-8 py-8 flex justify-between items-start bg-white border-b-2 border-black z-20 sticky top-0">
         <div>
           <img src="/logo_alua.svg" alt="ALUA" className="h-10 w-auto mb-2" />
-          <div className="flex items-center space-x-3">
-            <div className={`w-2 h-2 ${systemStatus === 'MONITORING' ? 'bg-black animate-pulse' : 'bg-gray-400'}`}></div>
-            <p className="text-xs uppercase tracking-widest text-gray-500 font-bergen-mono">
-              {systemStatus === 'MONITORING' ? 'Sistema Attivo' : 'Elaborazione Sinistro'}
-            </p>
+          <div className="flex items-center space-x-3 mt-1">
+            {/* Stato Sistema: Solo pallino soave */}
+            <div className={`w-3 h-3 rounded-full ${systemStatus === 'MONITORING' ? 'bg-black animate-pulse-slow' : 'bg-red-500'}`}></div>
           </div>
         </div>
         <div className="flex flex-col items-end gap-2 font-bergen-mono">
@@ -440,9 +434,6 @@ const App = () => {
           <div className="flex items-center gap-6 mt-2">
             <button onClick={handleShare} className="text-black hover:opacity-70 transition-opacity">
               <Share size={24} strokeWidth={1.5} />
-            </button>
-            <button onClick={handleDisconnect} className="text-xs uppercase tracking-widest text-gray-400 hover:text-black flex items-center gap-2 cursor-pointer">
-              [ RESET ]
             </button>
           </div>
         </div>
@@ -474,17 +465,15 @@ const App = () => {
 
         {/* Info Card */}
         <div className="border-2 border-black p-8 mb-8 space-y-8 bg-white">
-          <div className="flex justify-between items-start border-b border-gray-200 pb-6">
+          <div className="flex flex-col items-start border-b border-gray-200 pb-6 gap-6">
             <div>
               <span className="text-xs uppercase tracking-widest text-gray-500 block mb-2 font-bergen-mono">Rif. Contratto</span>
               <span className="font-bergen-mono text-lg tracking-wider font-bold">{contractData.id}</span>
             </div>
 
-
-
             <button
               onClick={() => setShowContract(true)}
-              className="bg-white hover:bg-gray-50 transition-colors px-6 py-3 text-xs uppercase tracking-widest border-2 border-black font-bergen-mono flex items-center gap-2"
+              className="bg-white hover:bg-gray-50 transition-colors py-3 text-xs uppercase tracking-widest border-b border-black font-bergen-mono flex items-center gap-2"
             >
               <FileText size={16} />
               Visualizza Digitale
@@ -511,7 +500,7 @@ const App = () => {
           <div className="pt-6 border-t border-gray-100 flex items-end justify-between">
             <div>
               <span className="text-xs uppercase tracking-widest text-gray-400 block pb-2">GRADO DI COMPATIBILITÀ</span>
-              <span className="text-6xl font-bold font-neue-haas">{contractData.compatibility}%</span>
+              <span className="text-6xl font-bold font-bergen-mono">{contractData.compatibility}%</span>
             </div>
             <div className="text-right">
               <span className="text-[10px] uppercase tracking-widest text-gray-400 block pb-1">FASCIA</span>
@@ -586,9 +575,10 @@ const App = () => {
         <div className="flex flex-col text-gray-500">
           <span>ID: {contractData.id}</span>
         </div>
-        {systemStatus === 'REPORTED' && (
-          <button onClick={resetSystem} className="underline hover:text-black">[ Nuova Segnalazione ]</button>
-        )}
+
+        <button onClick={handleDisconnect} className="text-xs uppercase tracking-widest text-gray-400 hover:text-red-600 flex items-center gap-2 cursor-pointer">
+          [ RESET SESSIONE ]
+        </button>
       </footer>
 
       {/* MODAL CONTRATTO DIGITALE - NUOVO DESIGN */}
