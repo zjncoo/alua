@@ -347,7 +347,11 @@ const App = () => {
   };
 
   const formattedTime = time.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
-  const formattedDate = time.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit' });
+
+  // Modifica data: Anno corrente + 2 anni
+  const futureTime = new Date(time);
+  futureTime.setFullYear(futureTime.getFullYear() + 2);
+  const formattedDate = futureTime.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
   // Helper per Weak Link Text
   const getWeakLinkText = () => {
@@ -426,7 +430,9 @@ const App = () => {
         <div className="w-full max-w-md space-y-12 animate-in fade-in duration-700 flex flex-col items-start">
 
           <div className="mb-2 w-full border-b-2 border-black pb-4">
-            <img src="/logo_alua.svg" alt="ALUA" className="h-16 w-auto" />
+            <a href="https://zjncoo.github.io/ALUA.IT/" target="_blank" rel="noopener noreferrer">
+              <img src="/logo_alua.svg" alt="ALUA" className="h-16 w-auto hover:opacity-70 transition-opacity" />
+            </a>
           </div>
 
           <p className="text-xs uppercase tracking-widest text-gray-500 text-left font-bergen-mono">Protocollo Verifica Identità</p>
@@ -550,7 +556,9 @@ const App = () => {
       {/* Header Fisso */}
       <header className="px-8 py-8 flex justify-between items-start bg-white border-b-2 border-black z-20 sticky top-0">
         <div>
-          <img src="/logo_alua.svg" alt="ALUA" className="h-10 w-auto mb-2" />
+          <a href="https://zjncoo.github.io/ALUA.IT/" target="_blank" rel="noopener noreferrer">
+            <img src="/logo_alua.svg" alt="ALUA" className="h-10 w-auto mb-2 hover:opacity-70 transition-opacity" />
+          </a>
           <div className="flex items-center space-x-3 mt-1">
             {/* Stato Sistema: Solo pallino soave */}
             <div className={`w-3 h-3 rounded-full ${systemStatus === 'MONITORING' ? 'bg-black animate-pulse-slow' : 'bg-red-500'}`}></div>
@@ -715,9 +723,12 @@ const App = () => {
 
       {/* Footer Fisso */}
       <footer className="px-8 py-6 border-t-2 border-black bg-white text-black flex flex-col items-center justify-between text-xs uppercase tracking-widest font-bergen-mono z-20 space-y-4">
-        <div className="w-full flex justify-between items-center">
-          <div className="flex flex-col text-gray-500">
+        <div className="w-full flex justify-between items-center text-[10px] md:text-xs">
+          <div className="flex flex-col text-gray-500 items-start gap-4">
             <span>ID: {contractData.id}</span>
+            <a href="https://zjncoo.github.io/ALUA.IT/" target="_blank" rel="noopener noreferrer" className="font-bold text-black border-b border-black hover:opacity-50 transition-opacity">
+              Scopri il progetto ALUA
+            </a>
           </div>
 
           <button onClick={handleDisconnect} className="text-xs uppercase tracking-widest text-gray-400 hover:text-red-600 flex items-center gap-2 cursor-pointer">
