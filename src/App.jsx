@@ -97,10 +97,10 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 w-full flex flex-col items-center justify-start gap-4">
+      <div className="flex-1 w-full flex flex-col items-start justify-start gap-4">
 
-        {/* PARTIES (NOMI) - In alto ben visibili */}
-        <div className="w-full flex justify-between items-center px-4 border-b-[4px] border-black pb-12">
+        {/* PARTIES (NOMI) - In alto ben visibili - SPOSTATO IN BASSO */}
+        <div className="w-full flex justify-between items-center px-4 border-b-[4px] border-black pb-12 mt-16">
           <div className="text-left w-1/2 pr-4">
             <span className="block text-2xl uppercase tracking-widest text-gray-400 mb-2">Contraente A</span>
             <span className="block text-5xl font-bold uppercase break-words leading-tight">{partyA}</span>
@@ -111,13 +111,13 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
           </div>
         </div>
 
-        {/* STATS: COMPATIBILITA' + FASCIA */}
-        <div className="flex flex-col items-center w-full mt-0">
+        {/* STATS: COMPATIBILITA' + FASCIA - ALLINEATO A SINISTRA */}
+        <div className="flex flex-col items-start w-full mt-0 px-4">
           <span className="block text-3xl uppercase tracking-[0.3em] text-gray-500 mb-4">Grado di Compatibilità</span>
           {/* RIMOSSO BOLD */}
           <span className="block text-[180px] font-bergen-mono leading-none tracking-tighter">{contractData.compatibility}%</span>
 
-          <div className="flex items-center gap-6 mt-2">
+          <div className="flex items-center gap-6 mt-0">
             <span className="text-3xl uppercase tracking-widest text-gray-400">Fascia Rischio</span>
             <span className="text-7xl font-bold text-black font-bergen-mono">
               {toRoman(contractData.riskBand)}
@@ -125,8 +125,8 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
           </div>
         </div>
 
-        {/* LISSAJOUS (Ridotto spazio e dimensione) */}
-        <div className="w-[400px] h-[400px] relative mt-0 border border-gray-100 rounded-full bg-white p-8">
+        {/* LISSAJOUS (Allineato a sinistra) */}
+        <div className="w-[400px] h-[400px] relative mt-0 border border-gray-100 rounded-full bg-white p-8 ml-4">
           <LissajousFigure
             gsr0={contractData.avgScl.a}
             gsr1={contractData.avgScl.b}
@@ -145,8 +145,8 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         )}
       </div>
 
-      {/* FOOTER */}
-      <div className="w-full text-left border-t-[4px] border-black pt-8 mt-4 flex flex-col gap-4 px-12 pb-16">
+      {/* FOOTER - ALIGNED LEFT SAME AS PHRASE (px-4) */}
+      <div className="w-full text-left border-t-[4px] border-black pt-8 mt-4 flex flex-col gap-4 px-4 pb-16">
         <span className="text-3xl uppercase tracking-widest text-gray-400 font-medium whitespace-normal leading-relaxed">
           Analisi generativa basata su parametri biometrici reali: Conduttanza Cutanea (GSR) e Capacità Elettrica.
         </span>
