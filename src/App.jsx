@@ -112,7 +112,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         </div>
 
         {/* STATS: COMPATIBILITA' + FASCIA */}
-        <div className="flex flex-col items-center w-full mt-4">
+        <div className="flex flex-col items-center w-full mt-[-2rem]">
           <span className="block text-3xl uppercase tracking-[0.3em] text-gray-500 mb-4">Grado di Compatibilità</span>
           {/* RIMOSSO BOLD */}
           <span className="block text-[180px] font-bergen-mono leading-none tracking-tighter">{contractData.compatibility}%</span>
@@ -126,7 +126,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         </div>
 
         {/* LISSAJOUS (Ridotto spazio) */}
-        <div className="w-[500px] h-[500px] relative mt-4 border border-gray-100 rounded-full bg-white">
+        <div className="w-[500px] h-[500px] relative mt-0 border border-gray-100 rounded-full bg-white">
           <LissajousFigure
             gsr0={contractData.avgScl.a}
             gsr1={contractData.avgScl.b}
@@ -134,13 +134,13 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
           />
         </div>
 
-        {/* PHRASE (Wider format) */}
+        {/* PHRASE (Wider format & Left Aligned) */}
         {contractData.phrase && (
-          <div className="text-center px-4 w-full">
+          <div className="text-left px-4 w-full mt-[-2rem]">
             <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-gray-800">
               "{contractData.phrase}"
             </span>
-            <div className="w-24 h-2 bg-black mx-auto mt-6"></div>
+            <div className="w-24 h-2 bg-black mr-auto ml-0 mt-6"></div>
           </div>
         )}
       </div>
