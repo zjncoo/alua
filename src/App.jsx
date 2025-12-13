@@ -88,8 +88,8 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       style={{ width: '1080px', height: '1920px', zIndex: -100 }} // 1080x1920 PX canvas
     >
       {/* HEADER */}
-      <div className="w-full flex justify-between items-center pt-16 mb-2 px-4">
-        <img src="/logo_alua.svg" alt="ALUA" className="h-[130px] w-auto object-contain" />
+      <div className="w-full flex justify-between items-start pt-16 mb-2 px-4">
+        <img src="/logo_alua.svg" alt="ALUA" className="w-1/2 h-auto object-contain object-left" />
         <div className="text-right flex flex-col justify-center">
           <span className="text-3xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
           <span className="text-4xl font-bold uppercase tracking-widest mt-2">EyeDeal di ALUA</span>
@@ -111,27 +111,37 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
           </div>
         </div>
 
-        {/* STATS: COMPATIBILITA' + FASCIA - ALLINEATO A SINISTRA */}
-        <div className="flex flex-col items-start w-full mt-0 px-4">
-          <span className="block text-3xl uppercase tracking-[0.3em] text-gray-500 mb-4">Grado di Compatibilità</span>
-          {/* RIMOSSO BOLD */}
-          <span className="block text-[180px] font-bergen-mono leading-none tracking-tighter">{contractData.compatibility}%</span>
+        {/* ROW: STATS (SX) + LISSAJOUS (DX) */}
+        <div className="w-full flex justify-between items-start mt-8 px-4">
 
-          <div className="flex items-center gap-6 mt-0">
-            <span className="text-3xl uppercase tracking-widest text-gray-400">Fascia Rischio</span>
-            <span className="text-7xl font-bold text-black font-bergen-mono">
-              {toRoman(contractData.riskBand)}
-            </span>
+          {/* COLONNA SINISTRA: DATI */}
+          <div className="flex flex-col items-start space-y-16">
+
+            {/* Compatibilità */}
+            <div>
+              <span className="block text-3xl uppercase tracking-[0.3em] text-gray-500 mb-4">Grado di Compatibilità</span>
+              <span className="block text-[150px] font-bergen-mono leading-none tracking-tighter">{contractData.compatibility}%</span>
+            </div>
+
+            {/* Fascia Rischio (Su due righe) */}
+            <div>
+              <span className="block text-3xl uppercase tracking-widest text-gray-400 mb-4">Fascia Rischio</span>
+              <span className="block text-9xl font-bold text-black font-bergen-mono leading-none">
+                {toRoman(contractData.riskBand)}
+              </span>
+            </div>
+
           </div>
-        </div>
 
-        {/* LISSAJOUS (Allineato a sinistra) */}
-        <div className="w-[400px] h-[400px] relative mt-0 border border-gray-100 rounded-full bg-white p-8 ml-4">
-          <LissajousFigure
-            gsr0={contractData.avgScl.a}
-            gsr1={contractData.avgScl.b}
-            compatibility={contractData.compatibility}
-          />
+          {/* COLONNA DESTRA: LISSAJOUS */}
+          <div className="w-[450px] h-[450px] relative border border-gray-100 rounded-full bg-white p-8">
+            <LissajousFigure
+              gsr0={contractData.avgScl.a}
+              gsr1={contractData.avgScl.b}
+              compatibility={contractData.compatibility}
+            />
+          </div>
+
         </div>
 
         {/* PHRASE (Wider format & Left Aligned) */}
@@ -140,7 +150,6 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
             <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-gray-800">
               "{contractData.phrase}"
             </span>
-            <div className="w-24 h-2 bg-black mr-auto ml-0 mt-6"></div>
           </div>
         )}
       </div>
