@@ -113,7 +113,7 @@ const App = () => {
     const q_bad = parseInt(params.get('bad') || '-1');
     const q_fascia = parseInt(params.get('fascia') || '1');
     const q_cost = params.get('cost') || '0,00€';
-    // const q_phrase = params.get('phrase') || ""; // Se servisse visualizzarla
+    const q_phrase = params.get('phrase') || "";
 
     // Parsing SCL e Medie
     const q_scl0 = parseInt(params.get('scl0') || '0');
@@ -151,6 +151,7 @@ const App = () => {
       cost: q_cost, // Nuova
       weakLink: q_bad,
       clausesText: generatedClause,
+      phrase: q_phrase,
       rawScl: { a: q_scl0, b: q_scl1 },
       avgScl: { a: q_avg0, b: q_avg1 } // Per Lissajous
     });
@@ -232,15 +233,12 @@ const App = () => {
         <style>
           {`
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
-            .font-neue-haas { font-family: 'Inter', sans-serif; }
-            .font-bergen-mono { font-family: 'Roboto Mono', monospace; }
           `}
         </style>
         <div className="w-full max-w-md space-y-12 animate-in fade-in duration-700 flex flex-col items-start">
 
           <div className="mb-2 w-full border-b-2 border-black pb-4">
-            <h1 className="text-6xl font-bold tracking-tighter font-neue-haas text-black">ALUA</h1>
+            <img src="/logo_alua.svg" alt="ALUA" className="h-16 w-auto" />
           </div>
 
           <p className="text-xs uppercase tracking-widest text-gray-500 text-left font-bergen-mono">Protocollo Verifica Identità</p>
@@ -310,7 +308,7 @@ const App = () => {
       {/* Header Fisso */}
       <header className="px-8 py-8 flex justify-between items-start bg-white border-b-2 border-black z-20 sticky top-0">
         <div>
-          <h1 className="text-4xl font-bold tracking-tighter font-neue-haas text-black mb-2">ALUA</h1>
+          <img src="/logo_alua.svg" alt="ALUA" className="h-10 w-auto mb-2" />
           <div className="flex items-center space-x-3">
             <div className={`w-2 h-2 ${systemStatus === 'MONITORING' ? 'bg-black animate-pulse' : 'bg-gray-400'}`}></div>
             <p className="text-xs uppercase tracking-widest text-gray-500 font-bergen-mono">
@@ -339,6 +337,25 @@ const App = () => {
               <span className="text-xs uppercase tracking-widest text-gray-500 block mb-2 font-bergen-mono">Rif. Contratto</span>
               <span className="font-bergen-mono text-lg tracking-wider font-bold">{contractData.id}</span>
             </div>
+
+            {/* FRASE DEDICATA */}
+            {/* LISSAJOUS + FRASE DEDICATA */}
+            {contractData.phrase && (
+              <div className="flex-1 px-8 flex flex-col items-center justify-center gap-4 hidden md:flex">
+                {/* Visualizzazione Lissajous */}
+                <div className="w-32 h-32 relative border border-gray-100 bg-white p-2">
+                  <LissajousFigure
+                    gsr0={contractData.avgScl.a}
+                    gsr1={contractData.avgScl.b}
+                    compatibility={contractData.compatibility}
+                  />
+                </div>
+                <span className="font-bergen-mono text-[16pt] font-medium uppercase leading-tight block text-center">
+                  {contractData.phrase}
+                </span>
+              </div>
+            )}
+
             <button
               onClick={() => setShowContract(true)}
               className="bg-white hover:bg-gray-50 transition-colors px-6 py-3 text-xs uppercase tracking-widest border-2 border-black font-bergen-mono flex items-center gap-2"
@@ -364,14 +381,15 @@ const App = () => {
           </div>
 
           {/* Mini Stat */}
-          <div className="pt-6 border-t border-gray-100 flex gap-8">
+          {/* Mini Stat - AGGIORNATA PER COMPATIBILITA' GRANDE */}
+          <div className="pt-6 border-t border-gray-100 flex items-end justify-between">
             <div>
-              <span className="text-[10px] uppercase tracking-widest text-gray-400 block pb-1">COMPATIBILITÀ</span>
-              <span className="text-xl font-bold">{contractData.compatibility}%</span>
+              <span className="text-xs uppercase tracking-widest text-gray-400 block pb-2">GRADO DI COMPATIBILITÀ</span>
+              <span className="text-6xl font-bold font-neue-haas">{contractData.compatibility}%</span>
             </div>
-            <div>
+            <div className="text-right">
               <span className="text-[10px] uppercase tracking-widest text-gray-400 block pb-1">FASCIA</span>
-              <span className="text-xl font-bold">{contractData.riskBand}</span>
+              <span className="text-2xl font-bold">{contractData.riskBand}</span>
             </div>
           </div>
         </div>
@@ -534,6 +552,19 @@ const App = () => {
                 </p>
               </div>
             )}
+
+            {/* BOTTONE PDF PARTE FISSA */}
+            <a
+              href="/contratto.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-white text-black py-4 mt-8 flex items-center justify-center gap-3 px-6 hover:bg-black hover:text-white transition-all border-2 border-black group cursor-pointer"
+            >
+              <FileText size={18} />
+              <span className="text-sm font-bold tracking-widest uppercase font-neue-haas group-hover:underline decoration-white underline-offset-4">
+                VISUALIZZA CONTRATTO COMPLETO
+              </span>
+            </a>
 
             {/* --- DEBUG DATA SECTION --- */}
             <div className="mt-12 p-4 bg-gray-100 border border-gray-300 font-mono text-[10px] text-gray-600">
