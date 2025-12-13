@@ -28,11 +28,11 @@ const LissajousFigure = ({ gsr0, gsr1, compatibility }) => {
     const val_gsr = (gsr0 + gsr1) / 2;
     const val_compat = compatibility;
 
-    const freq_x = 1 + Math.floor((val_gsr / 1000.0) * 9);
+    const freq_x = 1 + Math.floor((val_gsr / 1000.0) * 12);
     let freq_y = freq_x + 1;
     if (freq_y === freq_x) freq_y += 1;
 
-    const delta = (val_compat / 100.0) * Math.PI + 0.1;
+    const delta = (val_compat / 100.0) * Math.PI;
 
     // 2. Rendering
     ctx.clearRect(0, 0, width, height);
@@ -109,6 +109,9 @@ const App = () => {
     const q_fascia = parseInt(params.get('fascia') || '1');
     const q_scl0 = parseInt(params.get('scl0') || '0');
     const q_scl1 = parseInt(params.get('scl1') || '0');
+    // Nuovi parametri: Medie per Lissajous (se non presenti, fallback sui last values)
+    const q_avg0 = parseInt(params.get('avg0') || params.get('scl0') || '0');
+    const q_avg1 = parseInt(params.get('avg1') || params.get('scl1') || '0');
 
     // Parsing Bottoni -> Clausole
     const btn0_idx = (params.get('btn0') || '').split(',').filter(x => x).map(Number);
@@ -135,7 +138,8 @@ const App = () => {
       riskBand: q_fascia,
       weakLink: q_bad,
       clausesText: generatedClause,
-      rawScl: { a: q_scl0, b: q_scl1 }
+      rawScl: { a: q_scl0, b: q_scl1 },
+      avgScl: { a: q_avg0, b: q_avg1 } // Per Lissajous
     });
 
     // Gestione Nomi (QR vs Memoria)
@@ -480,8 +484,8 @@ const App = () => {
 
               <div className="w-64 h-64 relative border border-gray-200 bg-white">
                 <LissajousFigure
-                  gsr0={contractData.rawScl.a}
-                  gsr1={contractData.rawScl.b}
+                  gsr0={contractData.avgScl.a}
+                  gsr1={contractData.avgScl.b}
                   compatibility={contractData.compatibility}
                 />
               </div>
