@@ -89,7 +89,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
     >
       {/* HEADER */}
       <div className="w-full flex justify-between items-start pt-16 mb-2 px-4">
-        <img src="/logo_alua.svg" alt="ALUA" className="w-1/2 h-auto object-contain object-left" />
+        <img src="/logo_alua.svg" alt="ALUA" className="w-[600px] h-auto object-contain object-left flex-shrink-0" />
         <div className="text-right flex flex-col justify-center">
           <span className="text-3xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
           <span className="text-4xl font-bold uppercase tracking-widest mt-2">EyeDeal di ALUA</span>
@@ -119,7 +119,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
 
             {/* Compatibilità */}
             <div>
-              <span className="block text-3xl uppercase tracking-[0.3em] text-gray-500 mb-4">Grado di Compatibilità</span>
+              <span className="block text-3xl uppercase tracking-widest text-gray-500 mb-4">Grado di Compatibilità</span>
               <span className="block text-[150px] font-bergen-mono leading-none tracking-tighter">{contractData.compatibility}%</span>
             </div>
 
@@ -134,7 +134,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
           </div>
 
           {/* COLONNA DESTRA: LISSAJOUS */}
-          <div className="w-[450px] h-[450px] relative border border-gray-100 rounded-full bg-white p-8">
+          <div className="w-[450px] h-[450px] relative border border-gray-100 rounded-full bg-white p-8 flex-shrink-0">
             <LissajousFigure
               gsr0={contractData.avgScl.a}
               gsr1={contractData.avgScl.b}
@@ -144,10 +144,10 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
 
         </div>
 
-        {/* PHRASE (Wider format & Left Aligned) */}
+        {/* PHRASE (Wider format & Left Aligned - PUSHED TO BOTTOM) */}
         {contractData.phrase && (
-          <div className="text-left px-4 w-full mt-[-2rem]">
-            <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-gray-800">
+          <div className="text-left px-4 w-full mt-auto mb-4">
+            <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-black">
               "{contractData.phrase}"
             </span>
           </div>
@@ -161,6 +161,9 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         </span>
         <span className="text-3xl uppercase tracking-[0.2em] text-gray-300">
           Protocollo Verificato • {contractData.date}
+        </span>
+        <span className="text-3xl uppercase tracking-[0.2em] text-gray-300 mt-2">
+          © ALUA Systems 2025
         </span>
       </div>
     </div >
@@ -620,14 +623,25 @@ const App = () => {
       </main>
 
       {/* Footer Fisso */}
-      <footer className="px-8 py-6 border-t-2 border-black bg-white text-black flex justify-between items-center text-xs uppercase tracking-widest font-bergen-mono z-20">
-        <div className="flex flex-col text-gray-500">
-          <span>ID: {contractData.id}</span>
+      <footer className="px-8 py-6 border-t-2 border-black bg-white text-black flex flex-col items-center justify-between text-xs uppercase tracking-widest font-bergen-mono z-20 space-y-4">
+        <div className="w-full flex justify-between items-center">
+          <div className="flex flex-col text-gray-500">
+            <span>ID: {contractData.id}</span>
+          </div>
+
+          <button onClick={handleDisconnect} className="text-xs uppercase tracking-widest text-gray-400 hover:text-red-600 flex items-center gap-2 cursor-pointer">
+            [ RESET SESSIONE ]
+          </button>
         </div>
 
-        <button onClick={handleDisconnect} className="text-xs uppercase tracking-widest text-gray-400 hover:text-red-600 flex items-center gap-2 cursor-pointer">
-          [ RESET SESSIONE ]
-        </button>
+        {/* LEGAL FOOTER */}
+        <div className="w-full pt-4 border-t border-gray-100 text-[9px] leading-tight text-gray-400 normal-case text-justify font-sans">
+          <p className="font-bold text-black mb-1">Alua S.p.A.</p>
+          <p>
+            Sede Legale: Via Cordusio 7, 20123 Milano - assicurazioni@pec.alua.it - tel +39 045 8172117 - fax +39 045 8172630<br />
+            Capitale sociale i.v. Euro 69.000.000,00 - Registro delle Imprese di Milano, CF 01947090273 - P.IVA 03740811205 - R.E.A. 207330 - Società autorizzata all'esercizio delle assicurazioni con D.M. 05/02/27 N.18331, G.U. 05/02/2027 - Società iscritta all'Albo imprese di Assicurazione e riassicurazione Sez. I al n.1.00082, soggetta all'attività di direzione e coordinamento di Alua S.p.A. e facente parte del Gruppo Assicurativo iscritto all'Albo delle società capogruppo al n.046 - www.alua.it
+          </p>
+        </div>
       </footer>
 
       {/* MODAL CONTRATTO DIGITALE - NUOVO DESIGN */}
