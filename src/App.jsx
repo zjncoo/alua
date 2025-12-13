@@ -89,7 +89,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
     >
       {/* HEADER */}
       <div className="w-full flex justify-between items-start pt-16 mb-2 px-4">
-        <img src="/logo_alua.png" alt="ALUA" className="w-[540px] h-auto object-contain object-left flex-shrink-0" />
+        <img src="/logo_alua.png" alt="ALUA" className="w-[460px] h-auto object-contain object-left flex-shrink-0" />
         <div className="text-right flex flex-col justify-center">
           <span className="text-3xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
           <span className="text-4xl font-bold uppercase tracking-widest mt-2">EyeDeal di ALUA</span>
@@ -134,7 +134,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
           </div>
 
           {/* COLONNA DESTRA: LISSAJOUS */}
-          <div className="w-[550px] h-[550px] relative border border-gray-100 rounded-full bg-white p-0 flex-shrink-0">
+          <div className="w-[500px] h-[500px] relative border border-gray-100 rounded-full bg-white p-0 flex-shrink-0">
             <LissajousFigure
               gsr0={contractData.avgScl.a}
               gsr1={contractData.avgScl.b}
