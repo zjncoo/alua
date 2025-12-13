@@ -330,6 +330,29 @@ const App = () => {
       {/* Contenuto Scrollabile */}
       <main className="flex-1 flex flex-col relative z-10 overflow-y-auto p-8">
 
+        {/* LISSAJOUS + FRASE DEDICATA (Sopra Info Card) */}
+        {contractData.phrase && (
+          <div className="flex flex-col items-center justify-center gap-6 mb-8 w-full animate-in fade-in slide-in-from-top-4 duration-700">
+            {/* Visualizzazione Lissajous */}
+            <div className="w-48 h-48 relative border-2 border-black bg-white p-4 shadow-lg rounded-full">
+              <div className="w-full h-full rounded-full overflow-hidden">
+                <LissajousFigure
+                  gsr0={contractData.avgScl.a}
+                  gsr1={contractData.avgScl.b}
+                  compatibility={contractData.compatibility}
+                />
+              </div>
+            </div>
+
+            <div className="text-center max-w-lg px-4">
+              <span className="font-bergen-mono text-[16pt] font-medium uppercase leading-tight block text-black">
+                {contractData.phrase}
+              </span>
+              <div className="w-12 h-1 bg-black mx-auto mt-4"></div>
+            </div>
+          </div>
+        )}
+
         {/* Info Card */}
         <div className="border-2 border-black p-8 mb-8 space-y-8 bg-white">
           <div className="flex justify-between items-start border-b border-gray-200 pb-6">
@@ -338,23 +361,7 @@ const App = () => {
               <span className="font-bergen-mono text-lg tracking-wider font-bold">{contractData.id}</span>
             </div>
 
-            {/* FRASE DEDICATA */}
-            {/* LISSAJOUS + FRASE DEDICATA */}
-            {contractData.phrase && (
-              <div className="flex-1 px-8 flex flex-col items-center justify-center gap-4 hidden md:flex">
-                {/* Visualizzazione Lissajous */}
-                <div className="w-32 h-32 relative border border-gray-100 bg-white p-2">
-                  <LissajousFigure
-                    gsr0={contractData.avgScl.a}
-                    gsr1={contractData.avgScl.b}
-                    compatibility={contractData.compatibility}
-                  />
-                </div>
-                <span className="font-bergen-mono text-[16pt] font-medium uppercase leading-tight block text-center">
-                  {contractData.phrase}
-                </span>
-              </div>
-            )}
+
 
             <button
               onClick={() => setShowContract(true)}
