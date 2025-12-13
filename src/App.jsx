@@ -52,7 +52,7 @@ const LissajousFigure = ({ gsr0, gsr1, compatibility }) => {
       // x = sin(freq_x * t + delta)
       // y = sin(freq_y * t)
       const x = cx + radius * Math.sin(freq_x * t + delta);
-      const y = cy - radius * Math.sin(freq_y * t);
+      const y = cy + radius * Math.sin(freq_y * t);
 
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
@@ -330,25 +330,23 @@ const App = () => {
       {/* Contenuto Scrollabile */}
       <main className="flex-1 flex flex-col relative z-10 overflow-y-auto p-8">
 
-        {/* LISSAJOUS + FRASE DEDICATA (Sopra Info Card) */}
+        {/* LISSAJOUS + FRASE DEDICATA (Sopra Info Card, Allineato a SX) */}
         {contractData.phrase && (
-          <div className="flex flex-col items-center justify-center gap-6 mb-8 w-full animate-in fade-in slide-in-from-top-4 duration-700">
-            {/* Visualizzazione Lissajous */}
-            <div className="w-48 h-48 relative border-2 border-black bg-white p-4 shadow-lg rounded-full">
-              <div className="w-full h-full rounded-full overflow-hidden">
-                <LissajousFigure
-                  gsr0={contractData.avgScl.a}
-                  gsr1={contractData.avgScl.b}
-                  compatibility={contractData.compatibility}
-                />
-              </div>
+          <div className="flex flex-col items-start justify-start gap-4 mb-8 w-full animate-in fade-in slide-in-from-top-4 duration-700">
+            {/* Visualizzazione Lissajous - AL VIVO */}
+            <div className="w-48 h-48 relative">
+              <LissajousFigure
+                gsr0={contractData.avgScl.a}
+                gsr1={contractData.avgScl.b}
+                compatibility={contractData.compatibility}
+              />
             </div>
 
-            <div className="text-center max-w-lg px-4">
-              <span className="font-bergen-mono text-[16pt] font-medium uppercase leading-tight block text-black">
+            <div className="text-left max-w-lg">
+              <span className="font-bergen-mono text-[16pt] font-bold uppercase leading-tight block text-black">
                 {contractData.phrase}
               </span>
-              <div className="w-12 h-1 bg-black mx-auto mt-4"></div>
+              <div className="w-12 h-1 bg-black mt-4"></div>
             </div>
           </div>
         )}
