@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, FileText, ArrowRight, ShieldCheck, Activity, Users, Server, Database, X, LogOut, CheckCircle } from 'lucide-react';
+import { AlertTriangle, FileText, ArrowRight, ShieldCheck, Activity, Users, Server, Database, X, LogOut, CheckCircle, Share } from 'lucide-react';
 
 // MAPPING CLAUSOLE (Coerente con Python contract_generator.py)
 // MAPPING TESTI (Chiavi da monitor_arduino.py -> Testi da contract_generator.py)
@@ -62,6 +62,79 @@ const LissajousFigure = ({ gsr0, gsr1, compatibility }) => {
   }, [gsr0, gsr1, compatibility]);
 
   return <canvas ref={canvasRef} width={256} height={256} className="w-full h-full" />;
+};
+
+// TEMPLATE GRAFICO PER INSTAGRAM STORIES (Hidden but rendered)
+const StoryTemplate = ({ contractData, partyA, partyB }) => {
+  return (
+    <div
+      id="share-story-template"
+      className="fixed top-0 left-[-9999px] bg-white flex flex-col items-center justify-between p-16 font-bergen-mono text-black border-[20px] border-white"
+      style={{ width: '1080px', height: '1920px', zIndex: -1 }} // 1080x1920 PX canvas
+    >
+      {/* HEADER */}
+      <div className="w-full flex justify-between items-start border-b-[4px] border-black pb-8">
+        <img src="/logo_alua.svg" alt="ALUA" className="h-[120px] w-auto" />
+        <div className="text-right">
+          <span className="block text-4xl uppercase tracking-widest text-gray-400 mb-2">Protocollo</span>
+          <span className="block text-5xl font-bold">{contractData.id}</span>
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      <div className="flex-1 w-full flex flex-col items-center justify-center gap-16">
+
+        {/* LARGE LISSAJOUS */}
+        <div className="w-[800px] h-[800px] relative">
+          <LissajousFigure
+            gsr0={contractData.avgScl.a}
+            gsr1={contractData.avgScl.b}
+            compatibility={contractData.compatibility}
+          />
+        </div>
+
+        {/* PHRASE */}
+        {contractData.phrase && (
+          <div className="text-center px-8 border-t-[4px] border-b-[4px] border-black py-12 w-full">
+            <span className="font-bergen-mono text-[70px] uppercase font-bold leading-tight block">
+              {contractData.phrase}
+            </span>
+          </div>
+        )}
+
+        {/* STATS */}
+        <div className="grid grid-cols-2 gap-16 w-full text-center mt-8">
+          <div>
+            <span className="block text-4xl uppercase tracking-widest text-gray-400 mb-4">Compatibilità</span>
+            <span className="block text-[140px] font-bold font-neue-haas leading-none">{contractData.compatibility}%</span>
+          </div>
+          <div>
+            <span className="block text-4xl uppercase tracking-widest text-gray-400 mb-4">Rischio</span>
+            <span className="block text-[140px] font-bold font-neue-haas leading-none">{contractData.riskBand}</span>
+          </div>
+        </div>
+
+        {/* PARTIES */}
+        <div className="flex justify-between w-full mt-16 px-8">
+          <div className="text-left">
+            <span className="block text-3xl uppercase tracking-widest text-gray-400 mb-2">Contraente A</span>
+            <span className="block text-5xl font-bold uppercase">{partyA}</span>
+          </div>
+          <div className="text-right">
+            <span className="block text-3xl uppercase tracking-widest text-gray-400 mb-2">Contraente B</span>
+            <span className="block text-5xl font-bold uppercase">{partyB}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <div className="w-full text-center border-t-[4px] border-black pt-8">
+        <span className="text-3xl uppercase tracking-[0.2em] text-gray-500">
+          Certificato Digitalmente da ALUA
+        </span>
+      </div>
+    </div>
+  );
 };
 
 const App = () => {
@@ -226,6 +299,49 @@ const App = () => {
     return null;
   };
 
+  const handleShare = async () => {
+    try {
+      if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(50);
+
+      const element = document.getElementById('share-story-template');
+      if (!element) return;
+
+      // Usa html2canvas dalla finestra globale (CDN)
+      const canvas = await window.html2canvas(element, {
+        scale: 1, // 1:1 perchè è già 1080px
+        useCORS: true,
+        backgroundColor: "#ffffff"
+      });
+
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], `ALUA_Story_${contractData.id}.png`, { type: 'image/png' });
+
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: 'ALUA Protocol',
+              text: `Protocollo ${contractData.id} completato.`
+            });
+          } catch (err) {
+            console.log('Condivisione annullata o fallita', err);
+          }
+        } else {
+          // Fallback Download
+          const link = document.createElement('a');
+          link.download = `ALUA_Story_${contractData.id}.png`;
+          link.href = canvas.toDataURL();
+          link.click();
+        }
+      }, 'image/png');
+
+    } catch (error) {
+      console.error("Errore generazione story:", error);
+      alert("Errore nella generazione dell'immagine.");
+    }
+  };
+
   // --- VISTA 1: IDENTIFICAZIONE (LOGIN) ---
   if (view === 'LOGIN') {
     return (
@@ -321,9 +437,14 @@ const App = () => {
             <span className="text-xs block mb-1">{formattedDate}</span>
             <span className="text-xs text-gray-400 block">{formattedTime}</span>
           </div>
-          <button onClick={handleDisconnect} className="text-xs uppercase tracking-widest text-gray-400 hover:text-black flex items-center gap-2 cursor-pointer z-50 mt-2">
-            [ RESET ]
-          </button>
+          <div className="flex items-center gap-6 mt-2">
+            <button onClick={handleShare} className="text-black hover:opacity-70 transition-opacity">
+              <Share size={24} strokeWidth={1.5} />
+            </button>
+            <button onClick={handleDisconnect} className="text-xs uppercase tracking-widest text-gray-400 hover:text-black flex items-center gap-2 cursor-pointer">
+              [ RESET ]
+            </button>
+          </div>
         </div>
       </header>
 
@@ -596,6 +717,9 @@ const App = () => {
           ⚠️ ATTENZIONE: NESSUN DATO DAL QR (USA DEFAULT)
         </div>
       )}
+
+      {/* TEMPLATE NASCOSTO PER CONDIVISIONE */}
+      <StoryTemplate contractData={contractData} partyA={partyA} partyB={partyB} />
     </div>
   );
 };
