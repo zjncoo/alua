@@ -88,8 +88,8 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       style={{ width: '1080px', height: '1920px', zIndex: -1 }} // 1080x1920 PX canvas
     >
       {/* HEADER */}
-      <div className="w-full flex justify-between items-center pt-8 mb-12 px-8">
-        <img src="/logo_alua.svg" alt="ALUA" className="h-[220px] w-auto" />
+      <div className="w-full flex justify-between items-center pt-12 mb-4 px-8">
+        <img src="/icon.png" alt="ALUA" className="h-[200px] w-auto object-contain" />
         <div className="text-right flex flex-col justify-center">
           <span className="text-xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
           <span className="text-2xl font-bold uppercase tracking-widest mt-1">EyeDeal di ALUA</span>
@@ -97,7 +97,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       </div>
 
       {/* CONTENT */}
-      <div className="flex-1 w-full flex flex-col items-center justify-start gap-12">
+      <div className="flex-1 w-full flex flex-col items-center justify-start gap-8">
 
         {/* PARTIES (NOMI) - In alto ben visibili */}
         <div className="w-full flex justify-between items-center px-4 border-b-[4px] border-black pb-12">
