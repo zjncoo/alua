@@ -89,7 +89,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
     >
       {/* HEADER */}
       <div className="w-full flex justify-between items-center pt-16 mb-2 px-4">
-        <img src="/icon.png" alt="ALUA" className="h-[220px] w-auto object-contain" />
+        <img src="/logo_alua.svg" alt="ALUA" className="h-[100px] w-auto object-contain" />
         <div className="text-right flex flex-col justify-center">
           <span className="text-3xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
           <span className="text-4xl font-bold uppercase tracking-widest mt-2">EyeDeal di ALUA</span>
@@ -112,7 +112,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         </div>
 
         {/* STATS: COMPATIBILITA' + FASCIA */}
-        <div className="flex flex-col items-center w-full mt-[-2rem]">
+        <div className="flex flex-col items-center w-full mt-8">
           <span className="block text-3xl uppercase tracking-[0.3em] text-gray-500 mb-4">Grado di Compatibilità</span>
           {/* RIMOSSO BOLD */}
           <span className="block text-[180px] font-bergen-mono leading-none tracking-tighter">{contractData.compatibility}%</span>
@@ -125,8 +125,8 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
           </div>
         </div>
 
-        {/* LISSAJOUS (Ridotto spazio) */}
-        <div className="w-[500px] h-[500px] relative mt-0 border border-gray-100 rounded-full bg-white">
+        {/* LISSAJOUS (Ridotto spazio e dimensione) */}
+        <div className="w-[400px] h-[400px] relative mt-0 border border-gray-100 rounded-full bg-white">
           <LissajousFigure
             gsr0={contractData.avgScl.a}
             gsr1={contractData.avgScl.b}
