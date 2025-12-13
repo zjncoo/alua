@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { AlertTriangle, FileText, ArrowRight, ShieldCheck, Activity, Users, Server, Database, X, LogOut, CheckCircle } from 'lucide-react';
 
 // MAPPING CLAUSOLE (Coerente con Python contract_generator.py)
+// MAPPING TESTI (Chiavi da monitor_arduino.py -> Testi da contract_generator.py)
 const CLAUSE_MAPPING = {
-  CONOSCENZA: "Esplorazione preliminare.",
-  ROMANTICA: "Tensione attrattiva e vulnerabilità emotiva.",
-  PROFESSIONALE: "Collaborazione formale, efficienza prioritaria.",
-  AMICIZIA: "Supporto reciproco, tempo non strutturato.",
-  FAMILIARE: "Legame di appartenenza e obblighi impliciti.",
-  INTIMO: "Condivisione di spazi riservati."
+  CONOSCENZA: "Esplorazione preliminare.",    // Match CONOSCENZA
+  ROMANTICA: "Tensione attrattiva e vulnerabilità emotiva.", // Match ROMANTICA
+  LAVORATIVA: "Collaborazione formale, efficienza prioritaria.", // LAVORATIVA -> PROFESSIONALE text
+  AMICALE: "Supporto reciproco, tempo non strutturato.", // AMICALE -> AMICIZIA text
+  FAMILIARE: "Legame di appartenenza e obblighi impliciti.", // Match FAMILIARE
+  CONVIVENZA: "Condivisione di spazi riservati." // CONVIVENZA -> INTIMO text
 };
 
-const RELAZIONI_KEYS = ['CONOSCENZA', 'ROMANTICA', 'PROFESSIONALE', 'AMICIZIA', 'FAMILIARE', 'INTIMO'];
+// Ordine esatto dei bottoni in monitor_arduino.py
+const RELAZIONI_KEYS = ['CONOSCENZA', 'ROMANTICA', 'LAVORATIVA', 'AMICALE', 'FAMILIARE', 'CONVIVENZA'];
 
 const LissajousFigure = ({ gsr0, gsr1, compatibility }) => {
   const canvasRef = React.useRef(null);
@@ -124,10 +126,10 @@ const App = () => {
     // Unisci e deduplica
     const allbox = Array.from(new Set([...keys0, ...keys1]));
 
-    // Genera testo
-    let generatedClause = "Clausola Default: Relazione indefinita.";
+    // Genera testo (Esattamente come in contract_generator.py: join con spazio, nessun prefisso extra)
+    let generatedClause = "";
     if (allbox.length > 0) {
-      generatedClause = "LE PARTI CONCORDANO: " + allbox.map(k => CLAUSE_MAPPING[k] || "").join(" ");
+      generatedClause = allbox.map(k => CLAUSE_MAPPING[k] || "").join(" ");
     }
 
     setContractData({
