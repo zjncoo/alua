@@ -80,89 +80,59 @@ const toRoman = (num) => {
 
 // COMPARISON CHART COMPONENT
 const ComparisonChart = ({ contractData }) => {
-  const SLIDER_MAX = 1023;
+  // SCL max reference (typical range 0-500 µS for most users)
+  const SCL_MAX = 500;
 
-  // Converti slider in percentuali
-  const sliderA_pct = ((contractData.sliders?.a || 0) / SLIDER_MAX * 100).toFixed(1);
-  const sliderB_pct = ((contractData.sliders?.b || 0) / SLIDER_MAX * 100).toFixed(1);
-
-  // Score in percentuale
-  const scoreSCL_pct = ((contractData.scores?.scl || 0) * 100).toFixed(0);
-  const scoreSlider_pct = ((contractData.scores?.slider || 0) * 100).toFixed(0);
+  // Converti SCL in percentuali (usando avgScl per valori più stabili)
+  const sclA_value = contractData.avgScl?.a || 0;
+  const sclB_value = contractData.avgScl?.b || 0;
+  const sclA_pct = Math.min(100, (sclA_value / SCL_MAX * 100)).toFixed(1);
+  const sclB_pct = Math.min(100, (sclB_value / SCL_MAX * 100)).toFixed(1);
 
   return (
-    <div className="w-full space-y-8 border-2 border-gray-200 p-6 bg-gray-50">
-      <div className="flex items-center gap-2 mb-4 border-b border-gray-300 pb-3">
+    <div className="w-full space-y-6 border-2 border-black p-6 bg-white">
+      <div className="flex items-center gap-2 mb-4 border-b-2 border-black pb-3">
         <div className="w-2 h-2 bg-black"></div>
         <span className="text-sm font-bold uppercase tracking-widest font-neue-haas">Analisi Comparativa</span>
       </div>
 
-      {/* SLIDER VALUES */}
+      {/* SCL VALUES */}
       <div className="space-y-4">
-        <span className="text-xs uppercase tracking-widest text-gray-500 block">Valori Capacitanza (Slider)</span>
+        <span className="text-xs uppercase tracking-widest text-gray-500 block">Conduttanza Cutanea (SCL)</span>
 
         {/* Contraente A */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-xs font-bold uppercase">Contraente A</span>
-            <span className="text-sm font-bergen-mono font-bold">{sliderA_pct}%</span>
+            <span className="text-sm font-bergen-mono font-bold">{sclA_value.toFixed(1)} µS</span>
           </div>
-          <div className="w-full h-3 bg-white border border-gray-300 relative overflow-hidden">
+          <div className="w-full h-3 bg-gray-100 border border-gray-300 relative overflow-hidden">
             <div
               className="h-full bg-black transition-all duration-300"
-              style={{ width: `${sliderA_pct}%` }}
+              style={{ width: `${sclA_pct}%` }}
             ></div>
           </div>
-          <span className="text-[10px] text-gray-400 font-mono">Raw: {contractData.sliders?.a || 0} / {SLIDER_MAX}</span>
         </div>
 
         {/* Contraente B */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-xs font-bold uppercase">Contraente B</span>
-            <span className="text-sm font-bergen-mono font-bold">{sliderB_pct}%</span>
+            <span className="text-sm font-bergen-mono font-bold">{sclB_value.toFixed(1)} µS</span>
           </div>
-          <div className="w-full h-3 bg-white border border-gray-300 relative overflow-hidden">
+          <div className="w-full h-3 bg-gray-100 border border-gray-300 relative overflow-hidden">
             <div
               className="h-full bg-gray-800 transition-all duration-300"
-              style={{ width: `${sliderB_pct}%` }}
-            ></div>
-          </div>
-          <span className="text-[10px] text-gray-400 font-mono">Raw: {contractData.sliders?.b || 0} / {SLIDER_MAX}</span>
-        </div>
-      </div>
-
-      {/* PARTIAL SCORES */}
-      <div className="grid grid-cols-2 gap-6 pt-6 border-t border-gray-300">
-        {/* Score SCL */}
-        <div className="text-center space-y-2">
-          <span className="text-[10px] uppercase tracking-widest text-gray-500 block">Score SCL (Arousal)</span>
-          <div className="text-3xl font-bold font-bergen-mono">{scoreSCL_pct}%</div>
-          <div className="w-full h-2 bg-white border border-gray-300 relative overflow-hidden">
-            <div
-              className="h-full bg-blue-600 transition-all duration-300"
-              style={{ width: `${scoreSCL_pct}%` }}
-            ></div>
-          </div>
-        </div>
-
-        {/* Score Slider */}
-        <div className="text-center space-y-2">
-          <span className="text-[10px] uppercase tracking-widest text-gray-500 block">Score Slider</span>
-          <div className="text-3xl font-bold font-bergen-mono">{scoreSlider_pct}%</div>
-          <div className="w-full h-2 bg-white border border-gray-300 relative overflow-hidden">
-            <div
-              className="h-full bg-green-600 transition-all duration-300"
-              style={{ width: `${scoreSlider_pct}%` }}
+              style={{ width: `${sclB_pct}%` }}
             ></div>
           </div>
         </div>
       </div>
 
-      {/* Formula Info */}
-      <div className="pt-4 border-t border-gray-300">
-        <p className="text-[10px] text-gray-500 leading-relaxed">
-          <span className="font-bold text-black">Compatibilità Totale:</span> 50% SCL + 25% Slider + 25% Relazioni = {contractData.compatibility}%
+      {/* DISCLAIMER */}
+      <div className="pt-4 border-t border-gray-300 bg-gray-50 p-4 -mx-6 -mb-6">
+        <p className="text-[10px] text-gray-600 leading-relaxed font-sans">
+          <span className="font-bold text-black">Nota interpretativa:</span> La Conduttanza Cutanea (SCL) è un indicatore biometrico dell'attivazione psicofisiologica. Valori più elevati indicano un maggiore livello di arousal emotivo registrato durante l'esperienza interattiva. Un'SCL più alta può riflettere stati di attivazione, coinvolgimento emotivo o reattività fisiologica incrementata del soggetto nel contesto dell'interazione relazionale analizzata.
         </p>
       </div>
     </div>
