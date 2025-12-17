@@ -802,19 +802,18 @@ const App = () => {
                 `}
               style={{
                 background: systemStatus === 'MONITORING'
-                  ? 'radial-gradient(circle at 30% 30%, #dc2626, #991b1b)'
+                  ? '#C3000C'
                   : '#f3f4f6',
                 color: systemStatus === 'MONITORING' ? 'white' : '#9ca3af'
               }}
             >
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/30 to-transparent pointer-events-none rounded-full"></div>
-
               {systemStatus === 'MONITORING' && (
-                <>
-                  <AlertTriangle size={32} className="text-white mb-2 opacity-80" strokeWidth={1.5} />
-                  <span className="font-neue-haas text-lg tracking-[0.1em] font-bold">SEGNALA</span>
-                  <span className="font-bergen-mono text-[0.6rem] tracking-[0.2em] font-medium mt-1 opacity-70 uppercase">Violazione</span>
-                </>
+                <img
+                  src="/logo_alua.svg"
+                  alt="ALUA"
+                  className="w-32 h-auto opacity-100"
+                  style={{ filter: 'brightness(0) invert(1)' }}
+                />
               )}
               {systemStatus === 'REPORTED' && (
                 <span className="font-neue-haas text-lg tracking-[0.1em] font-bold">SEGNALATO</span>
