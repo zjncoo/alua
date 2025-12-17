@@ -816,9 +816,9 @@ const App = () => {
 
       {/* MODAL CONTRATTO DIGITALE - NUOVO DESIGN */}
       {showContract && (
-        <div className="absolute inset-0 z-50 bg-white flex flex-col animate-in fade-in duration-300 font-bergen-mono">
-          {/* Modal Header */}
-          <div className="p-6 border-b-2 border-black flex justify-between items-center bg-gray-50">
+        <div className="fixed inset-0 z-50 bg-white flex flex-col animate-in fade-in duration-300 font-bergen-mono overflow-hidden">
+          {/* Modal Header - STICKY */}
+          <div className="sticky top-0 z-10 p-6 border-b-2 border-black flex justify-between items-center bg-white shadow-sm">
             <div className="flex flex-col">
               <span className="text-[10px] uppercase tracking-widest text-gray-500">Documento Digitale</span>
               <span className="text-xl font-bold tracking-tight font-neue-haas">CONTRATTO {contractData.id}</span>
@@ -828,8 +828,8 @@ const App = () => {
             </button>
           </div>
 
-          {/* Modal Body */}
-          <div className="flex-1 overflow-y-auto p-8 space-y-12 bg-white">
+          {/* Modal Body - SCROLLABLE */}
+          <div className="flex-1 overflow-y-auto p-8 space-y-12 bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
 
             {/* Partecipanti */}
             <div className="grid grid-cols-2 gap-8 pb-8 border-b border-gray-100">
