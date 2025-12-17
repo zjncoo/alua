@@ -98,7 +98,7 @@ const ComparisonChart = ({ contractData }) => {
 
       {/* SCL VALUES */}
       <div className="space-y-4">
-        <span className="text-xs uppercase tracking-widest text-gray-500 block">Conduttanza Cutanea (SCL)</span>
+        <span className="text-xs uppercase tracking-widest text-gray-500 block">Media Conduttanza Cutanea (SCL)</span>
 
         {/* Contraente A */}
         <div className="space-y-2">
@@ -863,7 +863,7 @@ const App = () => {
                 <span className="text-sm font-bold uppercase tracking-widest font-neue-haas">Risonanza Emotiva (Lissajous)</span>
               </div>
 
-              <div className="w-64 h-64 relative border border-gray-200 bg-white">
+              <div className="w-48 h-48 relative bg-white">
                 <LissajousFigure
                   gsr0={contractData.avgScl.a}
                   gsr1={contractData.avgScl.b}
