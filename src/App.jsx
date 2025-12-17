@@ -255,11 +255,9 @@ const App = () => {
     riskBand: 1, // da 'fascia'
     cost: '0,00€', // da 'cost'
     weakLink: null, // da 'bad' (-1, 0, 1)
-    clausesText: "Dati non disponibili.", // Ricostruito da btn0/btn1
-    rawScl: { a: 0, b: 0 }, // da gsr0/gsr1
-    avgScl: { a: 0, b: 0 }, // da avg0/avg1
-    sliders: { a: 0, b: 0 }, // da sl0/sl1
-    scores: { scl: 0, slider: 0 } // da scl/sli
+    clausesText: "Dati non disponibili.", // Ricostruito da types
+    avgScl: { a: 0, b: 0 }, // da avg0/avg1 - usato per Lissajous e grafico comparativo
+    scores: { scl: 0, slider: 0 } // da scl/sli - score parziali per formula compatibilità
   });
 
   // --- EFFETTO 1: INIZIALIZZAZIONE E PARSING URL ---
@@ -287,15 +285,11 @@ const App = () => {
     const q_cost = params.get('cost') || '0,00€';
     const q_phrase = params.get('phrase') || "";
 
-    // Parsing SCL e Medie
-    const q_scl0 = parseInt(params.get('scl0') || '0');
-    const q_scl1 = parseInt(params.get('scl1') || '0');
-    const q_avg0 = parseFloat(params.get('avg0') || params.get('scl0') || '0');
-    const q_avg1 = parseFloat(params.get('avg1') || params.get('scl1') || '0');
+    // Parsing SCL Medie (usate per Lissajous e grafico comparativo)
+    const q_avg0 = parseFloat(params.get('avg0') || '0');
+    const q_avg1 = parseFloat(params.get('avg1') || '0');
 
-    // Parsing Slider e Score Parziali
-    const q_sl0 = parseInt(params.get('sl0') || '0');
-    const q_sl1 = parseInt(params.get('sl1') || '0');
+    // Parsing Score Parziali
     const q_score_scl = parseFloat(params.get('scl') || '0');
     const q_score_sli = parseFloat(params.get('sli') || '0');
 
@@ -321,19 +315,17 @@ const App = () => {
 
     setContractData({
       id: q_id,
-      date: q_date, // Nuova
+      date: q_date,
       machineId: params.get('mid') || 'ALUA-M-V1',
       sessionToken: Math.random().toString(36).substr(2, 9).toUpperCase(),
       compatibility: q_comp,
       riskBand: q_fascia,
-      cost: q_cost, // Nuova
+      cost: q_cost,
       weakLink: q_bad,
       clausesText: generatedClause,
       phrase: q_phrase,
-      rawScl: { a: q_scl0, b: q_scl1 },
-      avgScl: { a: q_avg0, b: q_avg1 }, // Per Lissajous
-      sliders: { a: q_sl0, b: q_sl1 }, // Valori slider raw (0-1023)
-      scores: { scl: q_score_scl, slider: q_score_sli } // Score parziali
+      avgScl: { a: q_avg0, b: q_avg1 }, // Medie SCL per Lissajous e grafico comparativo
+      scores: { scl: q_score_scl, slider: q_score_sli } // Score parziali per formula compatibilità
     });
 
     // Gestione Nomi (QR vs Memoria)
