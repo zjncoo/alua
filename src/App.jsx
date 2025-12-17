@@ -764,13 +764,13 @@ const App = () => {
         </div>
 
         {/* Zona Azione (Report) */}
-        <div className={`flex-1 flex flex-col items-center justify-center py-12 transition-colors duration-700 ${systemStatus === 'REPORTED' ? 'bg-gray-50' : 'bg-black'}`}>
+        <div className={`flex-1 flex flex-col items-center justify-center py-12 transition-colors duration-700 ${systemStatus === 'REPORTED' ? 'bg-gray-50' : ''} border-2 border-black`}>
 
           <div className="mb-12 text-center px-8 h-24 flex items-center justify-center w-full">
             {systemStatus === 'MONITORING' ? (
-              <div className="text-sm uppercase tracking-[0.15em] text-gray-300 leading-loose font-bergen-mono">
+              <div className="text-sm uppercase tracking-[0.15em] text-gray-500 leading-loose font-bergen-mono">
                 Premi per segnalare<br />
-                <span className="text-white font-bold font-neue-haas">violazione contrattuale</span>
+                <span className="text-black font-bold font-neue-haas">violazione contrattuale</span>
               </div>
             ) : (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white border-2 border-black p-6 w-full max-w-md text-left shadow-lg">
@@ -788,7 +788,7 @@ const App = () => {
 
           {/* BOTTONE ROSSO */}
           <div className="relative group w-64 h-64 flex items-center justify-center">
-            <div className="absolute -inset-4 border border-gray-700 rounded-full pointer-events-none"></div>
+            <div className="absolute -inset-4 border border-black rounded-full pointer-events-none"></div>
 
             <button
               onClick={handleReport}
