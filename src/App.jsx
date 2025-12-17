@@ -256,8 +256,7 @@ const App = () => {
     cost: '0,00€', // da 'cost'
     weakLink: null, // da 'bad' (-1, 0, 1)
     clausesText: "Dati non disponibili.", // Ricostruito da types
-    avgScl: { a: 0, b: 0 }, // da avg0/avg1 - usato per Lissajous e grafico comparativo
-    scores: { scl: 0, slider: 0 } // da scl/sli - score parziali per formula compatibilità
+    avgScl: { a: 0, b: 0 } // da avg0/avg1 - usato per Lissajous e grafico comparativo
   });
 
   // --- EFFETTO 1: INIZIALIZZAZIONE E PARSING URL ---
@@ -288,10 +287,6 @@ const App = () => {
     // Parsing SCL Medie (usate per Lissajous e grafico comparativo)
     const q_avg0 = parseFloat(params.get('avg0') || '0');
     const q_avg1 = parseFloat(params.get('avg1') || '0');
-
-    // Parsing Score Parziali
-    const q_score_scl = parseFloat(params.get('scl') || '0');
-    const q_score_sli = parseFloat(params.get('sli') || '0');
 
     // Parsing Clausole (RAW TYPES separati da virgola)
     const raw_types = (params.get('types') || '').split(',').filter(x => x);
@@ -324,8 +319,7 @@ const App = () => {
       weakLink: q_bad,
       clausesText: generatedClause,
       phrase: q_phrase,
-      avgScl: { a: q_avg0, b: q_avg1 }, // Medie SCL per Lissajous e grafico comparativo
-      scores: { scl: q_score_scl, slider: q_score_sli } // Score parziali per formula compatibilità
+      avgScl: { a: q_avg0, b: q_avg1 } // Medie SCL per Lissajous e grafico comparativo
     });
 
     // Gestione Nomi (QR vs Memoria)
