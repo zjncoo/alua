@@ -764,13 +764,13 @@ const App = () => {
         </div>
 
         {/* Zona Azione (Report) */}
-        <div className={`flex-1 flex flex-col items-center justify-center py-12 transition-colors duration-700 ${systemStatus === 'REPORTED' ? 'bg-gray-50' : ''} border-2 border-gray-200`}>
+        <div className={`flex-1 flex flex-col items-center justify-center py-12 transition-colors duration-700 ${systemStatus === 'REPORTED' ? 'bg-gray-50' : 'bg-black'}`}>
 
           <div className="mb-12 text-center px-8 h-24 flex items-center justify-center w-full">
             {systemStatus === 'MONITORING' ? (
-              <div className="text-sm uppercase tracking-[0.15em] text-gray-500 leading-loose font-bergen-mono">
+              <div className="text-sm uppercase tracking-[0.15em] text-gray-300 leading-loose font-bergen-mono">
                 Premi per segnalare<br />
-                <span className="text-black font-bold font-neue-haas">violazione contrattuale</span>
+                <span className="text-white font-bold font-neue-haas">violazione contrattuale</span>
               </div>
             ) : (
               <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white border-2 border-black p-6 w-full max-w-md text-left shadow-lg">
@@ -788,8 +788,7 @@ const App = () => {
 
           {/* BOTTONE ROSSO */}
           <div className="relative group w-64 h-64 flex items-center justify-center">
-            <div className="absolute -inset-4 border border-gray-200 rounded-full pointer-events-none"></div>
-            <div className="absolute -inset-8 border border-gray-100 rounded-full opacity-50 pointer-events-none"></div>
+            <div className="absolute -inset-4 border border-gray-700 rounded-full pointer-events-none"></div>
 
             <button
               onClick={handleReport}
@@ -824,24 +823,35 @@ const App = () => {
       </main>
 
       {/* Footer Fisso */}
-      <footer className="px-8 py-6 border-t-2 border-black bg-white text-black flex flex-col items-center justify-between text-xs uppercase tracking-widest font-bergen-mono z-20 space-y-4">
-        <div className="w-full flex justify-between items-center text-[10px] md:text-xs">
-          <div className="flex flex-col text-gray-500 items-start gap-4">
-            <span>ID: {contractData.id}</span>
-            <a href="https://zjncoo.github.io/ALUA.IT/" target="_blank" rel="noopener noreferrer" className="font-bold text-black border-b border-black hover:opacity-50 transition-opacity">
-              Scopri il progetto ALUA
-            </a>
-          </div>
+      <footer className="px-8 py-6 border-t-2 border-black bg-white text-black flex flex-col font-bergen-mono z-20">
+        {/* Contract ID - Top Left */}
+        <div className="w-full mb-4">
+          <span className="text-[10px] text-gray-500 uppercase tracking-widest">ID: {contractData.id}</span>
+        </div>
 
-          <button onClick={handleDisconnect} className="text-xs uppercase tracking-widest text-gray-400 hover:text-red-600 flex items-center gap-2 cursor-pointer">
-            [ RESET SESSIONE ]
+        {/* Main Actions - Centered Stacked */}
+        <div className="w-full flex flex-col items-center gap-4 mb-6">
+          <a
+            href="https://zjncoo.github.io/ALUA.IT/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs font-bold text-black border-b-2 border-black hover:opacity-50 transition-opacity uppercase tracking-widest"
+          >
+            Scopri il progetto ALUA
+          </a>
+
+          <button
+            onClick={handleDisconnect}
+            className="text-xs uppercase tracking-widest text-gray-400 hover:text-red-600 transition-colors cursor-pointer border-b border-gray-300 hover:border-red-600 pb-1"
+          >
+            Reset Sessione
           </button>
         </div>
 
         {/* LEGAL FOOTER */}
-        <div className="w-full pt-4 border-t border-gray-100 text-[9px] leading-tight text-gray-400 normal-case text-justify font-sans">
-          <p className="font-bold text-black mb-1">Alua S.p.A.</p>
-          <p>
+        <div className="w-full pt-4 border-t border-gray-200 text-[9px] leading-relaxed text-gray-400 normal-case text-left font-sans">
+          <p className="font-bold text-black mb-2">Alua S.p.A.</p>
+          <p className="leading-tight">
             Sede Legale: Via Cordusio 7, 20123 Milano - assicurazioni@pec.alua.it - tel +39 045 8172117 - fax +39 045 8172630<br />
             Capitale sociale i.v. Euro 69.000.000,00 - Registro delle Imprese di Milano, CF 01947090273 - P.IVA 03740811205 - R.E.A. 207330 - Società autorizzata all'esercizio delle assicurazioni con D.M. 05/02/27 N.18331, G.U. 05/02/2027 - Società iscritta all'Albo imprese di Assicurazione e riassicurazione Sez. I al n.1.00082, soggetta all'attività di direzione e coordinamento di Alua S.p.A. e facente parte del Gruppo Assicurativo iscritto all'Albo delle società capogruppo al n.046 - www.alua.it
           </p>
