@@ -1026,6 +1026,16 @@ const App = () => {
               )}
             </button>
           </div>
+
+          {/* Bottone Reset - Appare solo dopo segnalazione */}
+          {systemStatus === 'REPORTED' && (
+            <button
+              onClick={resetSystem}
+              className="mt-8 px-6 py-3 border-2 border-black bg-white text-black hover:bg-black hover:text-white transition-all text-xs uppercase tracking-widest font-bold font-neue-haas animate-in fade-in slide-in-from-bottom-4 duration-500"
+            >
+              Invia Nuova Segnalazione
+            </button>
+          )}
         </div>
       </main>
 
@@ -1086,19 +1096,7 @@ const App = () => {
           {/* Modal Body - SCROLLABLE */}
           <div className="flex-1 overflow-y-auto p-8 space-y-12 bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
 
-            {/* Partecipanti */}
-            <div className="grid grid-cols-2 gap-8 pb-8 border-b border-gray-100">
-              <div>
-                <span className="text-[10px] uppercase tracking-widest text-gray-400 block mb-1">Contraente A</span>
-                <span className="text-lg font-bold uppercase border-b-2 border-black pb-1 block w-full">{partyA || '---'}</span>
-              </div>
-              <div>
-                <span className="text-[10px] uppercase tracking-widest text-gray-400 block mb-1">Contraente B</span>
-                <span className="text-lg font-bold uppercase border-b-2 border-black pb-1 block w-full">{partyB || '---'}</span>
-              </div>
-            </div>
-
-            {/* BOTTONE PDF - Subito dopo i nomi */}
+            {/* BOTTONE PDF */}
             <a
               href="/contratto.pdf"
               target="_blank"
@@ -1111,16 +1109,15 @@ const App = () => {
               </span>
             </a>
 
-            {/* Sezione Statistiche Chiave */}
-            <div className="flex items-center gap-8 bg-gray-50 p-6 border border-gray-200">
-              <div className="flex-1 text-center border-r border-gray-300">
-                <span className="block text-4xl font-bold font-neue-haas">{contractData.compatibility}%</span>
-                <span className="text-[10px] uppercase tracking-widest text-gray-500">Compatibilità</span>
+            {/* Tabella Fascia Rischio e Costo */}
+            <div className="grid grid-cols-2 border-2 border-black bg-white">
+              <div className="p-6 text-center border-r-2 border-black">
+                <span className="text-[10px] uppercase tracking-widest text-gray-500 block mb-2">Fascia Rischio</span>
+                <span className="text-4xl font-bold font-neue-haas">{contractData.riskBand}</span>
               </div>
-              <div className="flex-1 text-center">
-                <span className="block text-4xl font-bold font-neue-haas">{contractData.riskBand}</span>
-                <span className="text-[10px] uppercase tracking-widest text-gray-500">Fascia Rischio</span>
-                <span className="block text-sm font-bold mt-2">{contractData.cost}</span>
+              <div className="p-6 text-center">
+                <span className="text-[10px] uppercase tracking-widest text-gray-500 block mb-2">Costo</span>
+                <span className="text-4xl font-bold font-neue-haas">{contractData.cost}</span>
               </div>
             </div>
 
@@ -1172,7 +1169,7 @@ const App = () => {
                 Certificato Digitalmente da ALUA Systems
               </p>
               <p className="text-[10px] text-gray-300 font-mono">
-                {contractData.sessionToken} • Stipulato il {contractData.date}
+                ID: {contractData.id} • Stipulato il {contractData.date}
               </p>
             </div>
           </div>
