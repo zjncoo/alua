@@ -1111,13 +1111,13 @@ const App = () => {
 
             {/* Tabella Fascia Rischio e Costo */}
             <div className="grid grid-cols-2 border-2 border-black bg-white">
-              <div className="p-6 text-center border-r-2 border-black">
+              <div className="py-6 px-4 flex flex-col items-center justify-center border-r-2 border-black">
                 <span className="text-[10px] uppercase tracking-widest text-gray-500 block mb-2">Fascia Rischio</span>
-                <span className="text-4xl font-bold font-neue-haas">{contractData.riskBand}</span>
+                <span className="text-4xl font-bold font-bergen-mono">{contractData.riskBand}</span>
               </div>
-              <div className="p-6 text-center">
+              <div className="py-6 px-4 flex flex-col items-center justify-center">
                 <span className="text-[10px] uppercase tracking-widest text-gray-500 block mb-2">Costo</span>
-                <span className="text-4xl font-bold font-neue-haas">{contractData.cost}</span>
+                <span className="text-4xl font-bold font-bergen-mono">{contractData.cost}</span>
               </div>
             </div>
 
