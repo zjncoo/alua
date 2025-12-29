@@ -185,13 +185,9 @@ const formatItalianText = (text) => {
   // Evita a capo prima della punteggiatura
   result = result.replace(/\s+([.,;:!?])/g, '\u00A0$1');
 
-  // --- ANTI-VEDOVE: Evita parole singole a fine frase ---
-  // Divide il testo in frasi (separatore: punto seguito da spazio o fine stringa)
-  // e unisce le ultime 2-3 parole di ogni frase con spazi non interrompibili
-  result = result.replace(/(\S+)\s+(\S+)([.!?])(\s|$)/g, '$1\u00A0$2$3$4');
-
-  // Per frasi più lunghe: unisce le ultime 3 parole
-  result = result.replace(/(\S+)\s+(\S+)\s+(\S+)([.!?])(\s|$)/g, '$1\u00A0$2\u00A0$3$4$5');
+  // --- ANTI-VEDOVE: Ogni frase va a capo ---
+  // Dopo punto, punto esclamativo o interrogativo seguito da spazio, inserisce un a capo
+  result = result.replace(/([.!?])\s+/g, '$1\n');
 
   return result;
 };
@@ -347,7 +343,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         {/* PHRASE (Wider format & Left Aligned - PUSHED TO BOTTOM) */}
         {contractData.phrase && (
           <div className="text-left px-4 w-full mt-auto mb-4">
-            <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-black">
+            <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-black whitespace-pre-line">
               "{formatItalianText(contractData.phrase)}"
             </span>
           </div>
@@ -961,7 +957,7 @@ const App = () => {
             </div>
 
             <div className="text-left max-w-lg">
-              <span className="font-bergen-mono text-[16pt] font-bold uppercase leading-tight block text-black">
+              <span className="font-bergen-mono text-[16pt] font-bold uppercase leading-tight block text-black whitespace-pre-line">
                 {formatItalianText(contractData.phrase)}
               </span>
               <div className="w-12 h-1 bg-black mt-4"></div>
