@@ -1172,7 +1172,7 @@ const App = () => {
           {/* Modal Header - STICKY */}
           <div className="sticky top-0 z-10 p-6 border-b-2 border-black flex justify-between items-center bg-white shadow-sm">
             <div className="flex flex-col">
-              <span className="text-[10px] uppercase tracking-widest text-gray-500">Documento Digitale</span>
+              <span className="text-[10px] uppercase tracking-widest text-gray-500">Contratto Digitale</span>
               <span className="text-xl font-bold tracking-tight font-neue-haas">CONTRATTO {contractData.id}</span>
             </div>
             <button onClick={handleCloseContract} className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition-colors">
