@@ -185,6 +185,14 @@ const formatItalianText = (text) => {
   // Evita a capo prima della punteggiatura
   result = result.replace(/\s+([.,;:!?])/g, '\u00A0$1');
 
+  // --- ANTI-VEDOVE: Evita parole singole a fine frase ---
+  // Divide il testo in frasi (separatore: punto seguito da spazio o fine stringa)
+  // e unisce le ultime 2-3 parole di ogni frase con spazi non interrompibili
+  result = result.replace(/(\S+)\s+(\S+)([.!?])(\s|$)/g, '$1\u00A0$2$3$4');
+
+  // Per frasi più lunghe: unisce le ultime 3 parole
+  result = result.replace(/(\S+)\s+(\S+)\s+(\S+)([.!?])(\s|$)/g, '$1\u00A0$2\u00A0$3$4$5');
+
   return result;
 };
 
