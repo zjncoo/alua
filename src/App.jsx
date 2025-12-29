@@ -237,6 +237,7 @@ const App = () => {
   const [systemStatus, setSystemStatus] = useState('MONITORING');
   const [isPressed, setIsPressed] = useState(false);
   const [showContract, setShowContract] = useState(false);
+  const [isClosingContract, setIsClosingContract] = useState(false); // Per animazione chiusura modal
   const [time, setTime] = useState(new Date());
   const [showInstallPrompt, setShowInstallPrompt] = useState(false); // Stato Prompt Installazione
   const [doNotShowAgain, setDoNotShowAgain] = useState(false); // Checkbox "Non mostrare più"
@@ -403,6 +404,14 @@ const App = () => {
 
   const resetSystem = () => {
     setSystemStatus('MONITORING');
+  };
+
+  const handleCloseContract = () => {
+    setIsClosingContract(true);
+    setTimeout(() => {
+      setShowContract(false);
+      setIsClosingContract(false);
+    }, 300); // Durata animazione
   };
 
   const formattedTime = time.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
@@ -686,7 +695,7 @@ const App = () => {
               className="bg-white hover:bg-gray-50 transition-colors py-3 text-xs uppercase tracking-widest border-b border-black font-bergen-mono flex items-center gap-2"
             >
               <FileText size={16} />
-              Visualizza Digitale
+              Contratto Digitale
             </button>
           </div>
 
@@ -816,14 +825,14 @@ const App = () => {
 
       {/* MODAL CONTRATTO DIGITALE - NUOVO DESIGN */}
       {showContract && (
-        <div className="fixed inset-0 z-50 bg-white flex flex-col animate-in fade-in duration-300 font-bergen-mono overflow-hidden">
+        <div className={`fixed inset-0 z-50 bg-white flex flex-col font-bergen-mono overflow-hidden transition-transform duration-300 ease-out ${isClosingContract ? 'translate-y-full' : 'translate-y-0 animate-in slide-in-from-bottom duration-300'}`}>
           {/* Modal Header - STICKY */}
           <div className="sticky top-0 z-10 p-6 border-b-2 border-black flex justify-between items-center bg-white shadow-sm">
             <div className="flex flex-col">
               <span className="text-[10px] uppercase tracking-widest text-gray-500">Documento Digitale</span>
               <span className="text-xl font-bold tracking-tight font-neue-haas">CONTRATTO {contractData.id}</span>
             </div>
-            <button onClick={() => setShowContract(false)} className="w-12 h-12 flex items-center justify-center hover:bg-black hover:text-white border-2 border-black transition-colors rounded-full">
+            <button onClick={handleCloseContract} className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition-colors">
               <X size={20} />
             </button>
           </div>
