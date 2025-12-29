@@ -906,26 +906,19 @@ const App = () => {
 
       {/* Header Fisso */}
       <header className="px-8 py-8 flex justify-between items-start bg-white border-b-2 border-black z-20 sticky top-0">
-        <div>
-          <a href="https://zjncoo.github.io/ALUA.IT/" target="_blank" rel="noopener noreferrer">
-            <img src="/logo_alua.svg" alt="ALUA" className="h-10 w-auto hover:opacity-70 transition-opacity" />
-          </a>
+        {/* Sinistra: Data, Ora, ID Contratto */}
+        <div className="flex flex-col items-start font-bergen-mono">
+          <span className="text-xs block">{formattedDate}</span>
+          <span className="text-xs text-gray-400 block">{formattedTime}</span>
           <div className="flex items-center space-x-3 mt-2">
             {/* Stato Sistema: Solo pallino soave */}
             <div className={`w-3 h-3 rounded-full ${systemStatus === 'MONITORING' ? 'bg-black animate-pulse-slow' : 'bg-red-500'}`}></div>
           </div>
         </div>
-        <div className="flex flex-col items-end font-bergen-mono">
-          <div className="flex items-start gap-4">
-            <div className="text-right">
-              <span className="text-xs block">{formattedDate}</span>
-              <span className="text-xs text-gray-400 block">{formattedTime}</span>
-            </div>
-            <button onClick={handleShare} className="text-black hover:opacity-70 transition-opacity">
-              <Share size={24} strokeWidth={1.5} />
-            </button>
-          </div>
-        </div>
+        {/* Destra: Logo */}
+        <a href="https://zjncoo.github.io/ALUA.IT/" target="_blank" rel="noopener noreferrer">
+          <img src="/logo_alua.svg" alt="ALUA" className="h-10 w-auto hover:opacity-70 transition-opacity" />
+        </a>
       </header>
 
       {/* Contenuto Scrollabile */}
@@ -967,26 +960,30 @@ const App = () => {
 
         {/* Info Card */}
         <div className="border-2 border-black p-8 mb-8 space-y-8 bg-white">
-          <div className="flex flex-col items-start border-b border-gray-200 pb-6 gap-6">
+          <div className="flex justify-between items-start border-b border-gray-200 pb-6">
             <div>
               <span className="text-xs uppercase tracking-widest text-gray-500 block mb-2 font-bergen-mono">Rif. Contratto</span>
               <span className="font-bergen-mono text-lg tracking-wider font-bold">{contractData.id}</span>
             </div>
-
-            <button
-              onClick={() => {
-                setShowContract(true);
-                // Avvia animazione slide-up dopo un frame
-                requestAnimationFrame(() => {
-                  setIsOpeningContract(true);
-                });
-              }}
-              className="bg-white hover:bg-gray-50 transition-colors py-3 text-xs uppercase tracking-widest border-b border-black font-bergen-mono flex items-center gap-2"
-            >
-              <FileText size={16} />
-              Contratto Digitale
+            {/* Bottone Condividi - Allineato a destra */}
+            <button onClick={handleShare} className="text-black hover:opacity-70 transition-opacity">
+              <Share size={24} strokeWidth={1.5} />
             </button>
           </div>
+
+          <button
+            onClick={() => {
+              setShowContract(true);
+              // Avvia animazione slide-up dopo un frame
+              requestAnimationFrame(() => {
+                setIsOpeningContract(true);
+              });
+            }}
+            className="bg-white hover:bg-gray-50 transition-colors py-3 text-xs uppercase tracking-widest border-b border-black font-bergen-mono flex items-center gap-2"
+          >
+            <FileText size={16} />
+            Contratto Digitale
+          </button>
 
           <div className="grid grid-cols-2 gap-8 font-bergen-mono">
             <div>
@@ -1003,7 +1000,6 @@ const App = () => {
             </div>
           </div>
 
-          {/* Mini Stat */}
           {/* Mini Stat - AGGIORNATA PER COMPATIBILITA' GRANDE */}
           <div className="pt-6 border-t border-gray-100 flex items-end justify-between">
             <div>
@@ -1234,65 +1230,69 @@ const App = () => {
       )}
 
       {/* WARNING OVERLAY: DATI MANCANTI */}
-      {missingData && (
-        <div className="fixed top-0 left-0 w-full bg-red-600 text-white z-[100] p-4 text-center font-bold uppercase tracking-widest text-xs animate-pulse">
-          ⚠️ ATTENZIONE: NESSUN DATO DAL QR (USA DEFAULT)
-        </div>
-      )}
+      {
+        missingData && (
+          <div className="fixed top-0 left-0 w-full bg-red-600 text-white z-[100] p-4 text-center font-bold uppercase tracking-widest text-xs animate-pulse">
+            ⚠️ ATTENZIONE: NESSUN DATO DAL QR (USA DEFAULT)
+          </div>
+        )
+      }
 
       {/* INSTALL PROMPT OVERLAY (iOS Style) */}
-      {showInstallPrompt && (
-        <div className="fixed bottom-0 left-0 w-full z-[100] px-4 pb-6 pt-2 animate-in slide-in-from-bottom duration-500">
-          <div className="bg-white border-2 border-black p-6 shadow-2xl flex flex-col gap-4 relative">
-            <button
-              onClick={handleDismissInstall}
-              className="absolute top-2 right-2 p-2 hover:bg-gray-100 rounded-full"
-            >
-              <X size={20} />
-            </button>
+      {
+        showInstallPrompt && (
+          <div className="fixed bottom-0 left-0 w-full z-[100] px-4 pb-6 pt-2 animate-in slide-in-from-bottom duration-500">
+            <div className="bg-white border-2 border-black p-6 shadow-2xl flex flex-col gap-4 relative">
+              <button
+                onClick={handleDismissInstall}
+                className="absolute top-2 right-2 p-2 hover:bg-gray-100 rounded-full"
+              >
+                <X size={20} />
+              </button>
 
-            <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
-              <div className="w-12 h-12 bg-black flex items-center justify-center text-white">
-                <img src="/logo_alua.svg" alt="App Icon" className="w-8 h-8 invert" />
+              <div className="flex items-center gap-4 border-b border-gray-100 pb-4">
+                <div className="w-12 h-12 bg-black flex items-center justify-center text-white">
+                  <img src="/logo_alua.svg" alt="App Icon" className="w-8 h-8 invert" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-sm uppercase tracking-widest font-neue-haas">Installa Applicazione</h3>
+                  <p className="text-xs text-gray-500 font-bergen-mono">Per la migliore esperienza ALUA</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-bold text-sm uppercase tracking-widest font-neue-haas">Installa Applicazione</h3>
-                <p className="text-xs text-gray-500 font-bergen-mono">Per la migliore esperienza ALUA</p>
+
+              <div className="space-y-3 text-xs font-bergen-mono uppercase tracking-wide text-gray-600">
+                <div className="flex items-center gap-3">
+                  <span className="font-bold text-black">1.</span>
+                  <span>Tocca l'icona <Share size={14} className="inline mx-1 align-text-bottom" /> nella barra in basso</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="font-bold text-black">2.</span>
+                  <span>Scorri e seleziona <span className="font-bold text-black border-b border-black">Aggiungi alla Home</span></span>
+                </div>
               </div>
+
+              {/* Checkbox Non Mostrare Più */}
+              <div className="flex items-center gap-2 mt-2 cursor-pointer" onClick={() => setDoNotShowAgain(!doNotShowAgain)}>
+                <div className={`w-4 h-4 border border-black flex items-center justify-center ${doNotShowAgain ? 'bg-black' : 'bg-white'}`}>
+                  {doNotShowAgain && <CheckCircle size={10} className="text-white" />}
+                </div>
+                <span className="text-[10px] uppercase font-bergen-mono text-gray-500 select-none">Non mostrare più questo messaggio</span>
+              </div>
+
+              <button
+                onClick={handleDismissInstall}
+                className="w-full bg-black text-white py-3 mt-0 text-xs uppercase tracking-widest font-bold font-neue-haas hover:bg-gray-900"
+              >
+                Ho Capito
+              </button>
             </div>
-
-            <div className="space-y-3 text-xs font-bergen-mono uppercase tracking-wide text-gray-600">
-              <div className="flex items-center gap-3">
-                <span className="font-bold text-black">1.</span>
-                <span>Tocca l'icona <Share size={14} className="inline mx-1 align-text-bottom" /> nella barra in basso</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="font-bold text-black">2.</span>
-                <span>Scorri e seleziona <span className="font-bold text-black border-b border-black">Aggiungi alla Home</span></span>
-              </div>
-            </div>
-
-            {/* Checkbox Non Mostrare Più */}
-            <div className="flex items-center gap-2 mt-2 cursor-pointer" onClick={() => setDoNotShowAgain(!doNotShowAgain)}>
-              <div className={`w-4 h-4 border border-black flex items-center justify-center ${doNotShowAgain ? 'bg-black' : 'bg-white'}`}>
-                {doNotShowAgain && <CheckCircle size={10} className="text-white" />}
-              </div>
-              <span className="text-[10px] uppercase font-bergen-mono text-gray-500 select-none">Non mostrare più questo messaggio</span>
-            </div>
-
-            <button
-              onClick={handleDismissInstall}
-              className="w-full bg-black text-white py-3 mt-0 text-xs uppercase tracking-widest font-bold font-neue-haas hover:bg-gray-900"
-            >
-              Ho Capito
-            </button>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* TEMPLATE NASCOSTO PER CONDIVISIONE */}
       <StoryTemplate contractData={contractData} partyA={partyA} partyB={partyB} />
-    </div>
+    </div >
   );
 };
 
