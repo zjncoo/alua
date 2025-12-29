@@ -26,12 +26,12 @@ import { AlertTriangle, FileText, ArrowRight, ShieldCheck, Activity, Users, Serv
  * I testi corrispondono a quelli generati nel contratto PDF (contract_generator.py)
  */
 const CLAUSE_MAPPING = {
-  CONOSCENZA: "Esplorazione preliminare.",                          // Tipo: Conoscenza
-  ROMANTICA: "Tensione attrattiva e vulnerabilità emotiva.",        // Tipo: Romantica
-  LAVORATIVA: "Collaborazione formale, efficienza prioritaria.",    // Tipo: Lavorativa/Professionale
-  AMICALE: "Supporto reciproco, tempo non strutturato.",            // Tipo: Amicale/Amicizia
-  FAMILIARE: "Legame di appartenenza e obblighi impliciti.",        // Tipo: Familiare
-  CONVIVENZA: "Condivisione di spazi riservati."                    // Tipo: Convivenza/Intimo
+  CONOSCENZA: "Esplorazione\u00A0preliminare.",                              // Tipo: Conoscenza
+  ROMANTICA: "Tensione\u00A0attrattiva e\u00A0vulnerabilità\u00A0emotiva.",          // Tipo: Romantica
+  LAVORATIVA: "Collaborazione\u00A0formale, efficienza\u00A0prioritaria.",        // Tipo: Lavorativa/Professionale
+  AMICALE: "Supporto\u00A0reciproco, tempo\u00A0non\u00A0strutturato.",               // Tipo: Amicale/Amicizia
+  FAMILIARE: "Legame\u00A0di\u00A0appartenenza e\u00A0obblighi\u00A0impliciti.",          // Tipo: Familiare
+  CONVIVENZA: "Condivisione\u00A0di\u00A0spazi\u00A0riservati."                       // Tipo: Convivenza/Intimo
 };
 
 /**
@@ -144,6 +144,49 @@ const toRoman = (num) => {
   }
   return roman;
 }
+
+/**
+ * ============================================================================
+ * FUNZIONE HELPER: formatItalianText
+ * ============================================================================
+ * Applica spazi non interrompibili (nbsp) secondo le convenzioni editoriali italiane.
+ * Evita a capo inappropriati dopo articoli, preposizioni e congiunzioni brevi.
+ * 
+ * @param {string} text - Il testo da formattare
+ * @returns {string} Il testo con spazi non interrompibili dove necessario
+ */
+const formatItalianText = (text) => {
+  if (!text) return "";
+
+  // Parole dopo le quali NON si deve andare a capo (articoli, preposizioni, congiunzioni)
+  const noBreakAfter = [
+    'il', 'lo', 'la', 'i', 'gli', 'le', 'l',        // Articoli determinativi
+    'un', 'uno', 'una',                               // Articoli indeterminativi
+    'di', 'a', 'da', 'in', 'con', 'su', 'per', 'tra', 'fra', // Preposizioni semplici
+    'del', 'dello', 'della', 'dei', 'degli', 'delle', // Preposizioni articolate
+    'al', 'allo', 'alla', 'ai', 'agli', 'alle',
+    'dal', 'dallo', 'dalla', 'dai', 'dagli', 'dalle',
+    'nel', 'nello', 'nella', 'nei', 'negli', 'nelle',
+    'sul', 'sullo', 'sulla', 'sui', 'sugli', 'sulle',
+    'e', 'o', 'ma', 'che', 'se', 'come', 'quando',   // Congiunzioni
+    'non', 'più', 'già', 'mai', 'sempre',             // Avverbi comuni
+    'un\'', 'quest\'', 'quell\'', 'all\'', 'dall\'', 'nell\'', 'sull\'' // Elisioni
+  ];
+
+  // Crea regex per ogni parola (case insensitive, seguito da spazio)
+  let result = text;
+  noBreakAfter.forEach(word => {
+    // Regex: parola (case insensitive) seguita da uno spazio
+    const regex = new RegExp(`\\b(${word})\\s+`, 'gi');
+    // Sostituisce con parola + spazio non interrompibile
+    result = result.replace(regex, '$1\u00A0');
+  });
+
+  // Evita a capo prima della punteggiatura
+  result = result.replace(/\s+([.,;:!?])/g, '\u00A0$1');
+
+  return result;
+};
 
 /**
  * ============================================================================
@@ -297,7 +340,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         {contractData.phrase && (
           <div className="text-left px-4 w-full mt-auto mb-4">
             <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-black">
-              "{contractData.phrase}"
+              "{formatItalianText(contractData.phrase)}"
             </span>
           </div>
         )}
@@ -911,7 +954,7 @@ const App = () => {
 
             <div className="text-left max-w-lg">
               <span className="font-bergen-mono text-[16pt] font-bold uppercase leading-tight block text-black">
-                {contractData.phrase}
+                {formatItalianText(contractData.phrase)}
               </span>
               <div className="w-12 h-1 bg-black mt-4"></div>
             </div>
@@ -945,13 +988,13 @@ const App = () => {
             <div>
               <div className="flex flex-col">
                 <span className="text-xs uppercase tracking-widest text-gray-500 mb-2 flex items-center gap-2">Contraente A</span>
-                <span className="text-xl font-bold truncate uppercase">{partyA}</span>
+                <span className="text-xl font-bold uppercase">{partyA}</span>
               </div>
             </div>
             <div>
               <div className="flex flex-col">
                 <span className="text-xs uppercase tracking-widest text-gray-500 mb-2 flex items-center gap-2">Contraente B</span>
-                <span className="text-xl font-bold truncate uppercase">{partyB}</span>
+                <span className="text-xl font-bold uppercase">{partyB}</span>
               </div>
             </div>
           </div>
