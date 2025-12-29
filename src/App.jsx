@@ -1106,7 +1106,7 @@ const App = () => {
         </div>
 
         {/* Footer Certificato Digitale - uguale al modale */}
-        <div className="w-full text-center py-4 border-t-2 border-black">
+        <div className="w-[calc(100%+4rem)] -mx-8 text-center py-4 border-t-2 border-black px-8">
           <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">
             Certificato Digitalmente da ALUA Systems
           </p>
@@ -1116,12 +1116,27 @@ const App = () => {
         </div>
 
         {/* LEGAL FOOTER */}
-        <div className="w-full pt-4 border-t-2 border-black text-[9px] leading-relaxed text-gray-400 normal-case text-left font-sans">
+        <div className="w-[calc(100%+4rem)] -mx-8 pt-4 border-t-2 border-black text-[9px] leading-relaxed text-gray-400 normal-case text-left font-sans px-8">
           <p className="font-bold text-black mb-2">Alua S.p.A.</p>
           <p className="leading-tight">
             Sede Legale: Via Cordusio 7, 20123 Milano - assicurazioni@pec.alua.it - tel +39 045 8172117 - fax +39 045 8172630<br />
             Capitale sociale i.v. Euro 69.000.000,00 - Registro delle Imprese di Milano, CF 01947090273 - P.IVA 03740811205 - R.E.A. 207330 - Società autorizzata all'esercizio delle assicurazioni con D.M. 05/02/27 N.18331, G.U. 05/02/2027 - Società iscritta all'Albo imprese di Assicurazione e riassicurazione Sez. I al n.1.00082, soggetta all'attività di direzione e coordinamento di Alua S.p.A. e facente parte del Gruppo Assicurativo iscritto all'Albo delle società capogruppo al n.046 - www.alua.it
           </p>
+        </div>
+
+        {/* Copyright ALUA SYSTEMS */}
+        <div className="w-[calc(100%+4rem)] -mx-8 text-center py-4 border-t-2 border-black px-8">
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest">
+            © 2025 ALUA SYSTEMS
+          </p>
+          <a
+            href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.it"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[9px] text-gray-400 hover:text-black transition-colors underline"
+          >
+            CC BY-NC-ND (Attribuzione - Non Commerciale - Non Opere Derivate)
+          </a>
         </div>
       </footer>
 
