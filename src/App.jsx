@@ -759,6 +759,13 @@ const App = () => {
         }}
       >
         <img src="/logo_alua.svg" alt="ALUA" className="h-16 md:h-20 w-auto" />
+
+        {/* Copyright Splash */}
+        <div className="absolute bottom-8 w-full text-center font-bergen-mono">
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest flex items-center justify-center gap-1">
+            <span className="text-sm font-bold">©</span> ALUA SYSTEMS
+          </p>
+        </div>
       </div>
     );
   }
@@ -1131,7 +1138,7 @@ const App = () => {
         </div>
 
         {/* LEGAL FOOTER */}
-        <div className="w-[calc(100%+4rem)] -mx-8 pt-4 border-t-2 border-black text-[9px] leading-relaxed text-gray-400 normal-case text-left font-sans px-8">
+        <div className="w-[calc(100%+4rem)] -mx-8 py-4 border-t-2 border-black text-[9px] leading-relaxed text-gray-400 normal-case text-left font-sans px-8">
           <p className="font-bold text-black mb-2">Alua S.p.A.</p>
           <p className="leading-tight">
             Sede Legale: Via Cordusio 7, 20123 Milano - assicurazioni@pec.alua.it - tel +39 045 8172117 - fax +39 045 8172630<br />
@@ -1140,7 +1147,7 @@ const App = () => {
         </div>
 
         {/* Copyright ALUA SYSTEMS */}
-        <div className="w-[calc(100%+4rem)] -mx-8 text-center py-4 border-t-2 border-black px-8">
+        <div className="w-[calc(100%+4rem)] -mx-8 text-center pb-4 px-8">
           <p className="text-[10px] text-gray-400 uppercase tracking-widest flex items-center justify-center gap-1">
             <span className="text-sm font-bold">©</span> 2025 ALUA SYSTEMS
           </p>
