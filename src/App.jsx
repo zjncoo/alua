@@ -240,6 +240,7 @@ const App = () => {
   const [isPressed, setIsPressed] = useState(false);
   const [showContract, setShowContract] = useState(false);
   const [isClosingContract, setIsClosingContract] = useState(false); // Per animazione chiusura modal
+  const [isOpeningContract, setIsOpeningContract] = useState(false); // Per animazione apertura modal
   const [time, setTime] = useState(new Date());
   const [showInstallPrompt, setShowInstallPrompt] = useState(false); // Stato Prompt Installazione
   const [doNotShowAgain, setDoNotShowAgain] = useState(false); // Checkbox "Non mostrare più"
@@ -422,10 +423,11 @@ const App = () => {
 
   const handleCloseContract = () => {
     setIsClosingContract(true);
+    setIsOpeningContract(false);
     setTimeout(() => {
       setShowContract(false);
       setIsClosingContract(false);
-    }, 300); // Durata animazione
+    }, 500); // Durata animazione (uguale alla transizione)
   };
 
   const formattedTime = time.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
@@ -503,7 +505,12 @@ const App = () => {
   // --- SPLASH SCREEN ---
   if (showSplash) {
     return (
-      <div className={`fixed inset-0 z-[200] bg-white flex items-center justify-center transition-transform duration-500 ease-out ${splashExiting ? '-translate-y-full' : 'translate-y-0'}`}>
+      <div
+        className={`fixed inset-0 z-[200] bg-white flex items-center justify-center ${splashExiting ? '-translate-y-full' : 'translate-y-0'}`}
+        style={{
+          transition: 'transform 700ms cubic-bezier(0.4, 0, 0.2, 1)'
+        }}
+      >
         <img src="/logo_alua.svg" alt="ALUA" className="h-20 w-auto" />
       </div>
     );
@@ -714,7 +721,13 @@ const App = () => {
             </div>
 
             <button
-              onClick={() => setShowContract(true)}
+              onClick={() => {
+                setShowContract(true);
+                // Avvia animazione slide-up dopo un frame
+                requestAnimationFrame(() => {
+                  setIsOpeningContract(true);
+                });
+              }}
               className="bg-white hover:bg-gray-50 transition-colors py-3 text-xs uppercase tracking-widest border-b border-black font-bergen-mono flex items-center gap-2"
             >
               <FileText size={16} />
@@ -846,9 +859,13 @@ const App = () => {
         </div>
       </footer>
 
-      {/* MODAL CONTRATTO DIGITALE - NUOVO DESIGN */}
       {showContract && (
-        <div className={`fixed inset-0 z-50 bg-white flex flex-col font-bergen-mono overflow-hidden transition-transform duration-300 ease-out ${isClosingContract ? 'translate-y-full' : 'translate-y-0 animate-in slide-in-from-bottom duration-300'}`}>
+        <div
+          className={`fixed inset-0 z-50 bg-white flex flex-col font-bergen-mono overflow-hidden ${isClosingContract ? 'translate-y-full' : isOpeningContract ? 'translate-y-0' : 'translate-y-full'}`}
+          style={{
+            transition: 'transform 500ms cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
           {/* Modal Header - STICKY */}
           <div className="sticky top-0 z-10 p-6 border-b-2 border-black flex justify-between items-center bg-white shadow-sm">
             <div className="flex flex-col">
