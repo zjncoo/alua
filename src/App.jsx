@@ -225,8 +225,16 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
   return (
     <div
       id="share-story-template"
-      className="absolute top-0 left-0 bg-white flex flex-col items-center justify-between p-16 font-bergen-mono text-black border-[20px] border-white"
-      style={{ width: '1080px', height: '1920px', zIndex: -100 }} // 1080x1920 PX canvas
+      className="absolute bg-white flex flex-col items-center justify-between p-16 font-bergen-mono text-black border-[20px] border-white"
+      style={{
+        width: '1080px',
+        height: '1920px',
+        zIndex: -100,
+        left: '-9999px',      // Sposta completamente fuori dalla viewport
+        top: '-9999px',
+        visibility: 'hidden', // Nasconde visivamente ma mantiene renderizzato per html2canvas
+        pointerEvents: 'none' // Non intercetta click
+      }}
     >
       {/* HEADER */}
       <div className="w-full flex justify-between items-start pt-16 mb-2 px-4">
