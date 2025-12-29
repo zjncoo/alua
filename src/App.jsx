@@ -233,6 +233,8 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
 
 const App = () => {
   // Stati dell'app
+  const [showSplash, setShowSplash] = useState(true); // Splash screen iniziale
+  const [splashExiting, setSplashExiting] = useState(false); // Per animazione slide-up
   const [view, setView] = useState('LOGIN'); // LOGIN o DASHBOARD
   const [systemStatus, setSystemStatus] = useState('MONITORING');
   const [isPressed, setIsPressed] = useState(false);
@@ -263,6 +265,18 @@ const App = () => {
   // --- EFFETTO 1: INIZIALIZZAZIONE E PARSING URL ---
   const [debugParams, setDebugParams] = useState({});
   const [missingData, setMissingData] = useState(false);
+
+  // --- EFFETTO SPLASH SCREEN ---
+  useEffect(() => {
+    const splashTimer = setTimeout(() => {
+      setSplashExiting(true); // Avvia animazione slide-up
+      setTimeout(() => {
+        setShowSplash(false); // Rimuove splash dopo animazione
+      }, 500); // Durata animazione slide-up
+    }, 1000); // Mostra splash per 1 secondo
+
+    return () => clearTimeout(splashTimer);
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
@@ -485,6 +499,15 @@ const App = () => {
       alert("Errore nella generazione dell'immagine.");
     }
   };
+
+  // --- SPLASH SCREEN ---
+  if (showSplash) {
+    return (
+      <div className={`fixed inset-0 z-[200] bg-white flex items-center justify-center transition-transform duration-500 ease-out ${splashExiting ? '-translate-y-full' : 'translate-y-0'}`}>
+        <img src="/logo_alua.svg" alt="ALUA" className="h-20 w-auto" />
+      </div>
+    );
+  }
 
   // --- VISTA 1: IDENTIFICAZIONE (LOGIN) ---
   if (view === 'LOGIN') {
