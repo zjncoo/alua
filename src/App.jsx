@@ -234,7 +234,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
 const App = () => {
   // Stati dell'app
   const [showSplash, setShowSplash] = useState(true); // Splash screen iniziale
-  const [splashExiting, setSplashExiting] = useState(false); // Per animazione slide-up
+  const [splashFading, setSplashFading] = useState(false); // Per animazione fade-out
   const [view, setView] = useState('LOGIN'); // LOGIN o DASHBOARD
   const [systemStatus, setSystemStatus] = useState('MONITORING');
   const [isPressed, setIsPressed] = useState(false);
@@ -270,10 +270,10 @@ const App = () => {
   // --- EFFETTO SPLASH SCREEN ---
   useEffect(() => {
     const splashTimer = setTimeout(() => {
-      setSplashExiting(true); // Avvia animazione slide-up
+      setSplashFading(true); // Avvia fade-out
       setTimeout(() => {
-        setShowSplash(false); // Rimuove splash dopo animazione
-      }, 700); // Sincronizzato con durata CSS (700ms)
+        setShowSplash(false); // Rimuove splash dopo fade
+      }, 300); // Durata fade-out veloce
     }, 1000); // Mostra splash per 1 secondo
 
     return () => clearTimeout(splashTimer);
@@ -506,12 +506,12 @@ const App = () => {
   if (showSplash) {
     return (
       <div
-        className={`fixed inset-0 z-[200] bg-white flex items-center justify-center ${splashExiting ? '-translate-y-full' : 'translate-y-0'}`}
+        className={`fixed inset-0 z-[200] bg-white flex items-center justify-center ${splashFading ? 'opacity-0' : 'opacity-100'}`}
         style={{
-          transition: 'transform 700ms cubic-bezier(0.4, 0, 0.2, 1)'
+          transition: 'opacity 300ms ease-out'
         }}
       >
-        <img src="/logo_alua.svg" alt="ALUA" className="h-20 w-auto" />
+        <img src="/logo_alua.svg" alt="ALUA" className="h-16 md:h-20 w-auto" />
       </div>
     );
   }

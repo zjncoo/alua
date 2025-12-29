@@ -21,6 +21,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 /* Animazioni custom per ALUA se non usi tailwind-animate */
 @keyframes fadeIn {
   from { opacity: 0; }
