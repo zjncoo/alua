@@ -1,91 +1,171 @@
+/**
+ * ============================================================================
+ * ALUA - Applicazione Web per Contratti Digitali
+ * ============================================================================
+ * Questa applicazione React mostra i dati di un contratto digitale generato
+ * dalla macchina ALUA (sensori biometrici). I dati vengono passati tramite
+ * parametri URL (solitamente da un QR code).
+ * ============================================================================
+ */
+
+// --- IMPORTAZIONI ---
+// React: libreria principale per creare interfacce utente
+// useState: hook per gestire lo stato dei componenti (es. showContract, partyA)
+// useEffect: hook per eseguire effetti collaterali (es. timer, fetch dati da URL)
 import React, { useState, useEffect } from 'react';
+
+// Lucide-react: libreria di icone vettoriali usate nell'interfaccia
+// Ogni icona è un componente React (es. <FileText /> per l'icona documento)
 import { AlertTriangle, FileText, ArrowRight, ShieldCheck, Activity, Users, Server, Database, X, LogOut, CheckCircle, Share } from 'lucide-react';
 
-// MAPPING CLAUSOLE (Coerente con Python contract_generator.py)
-// MAPPING TESTI (Chiavi da monitor_arduino.py -> Testi da contract_generator.py)
+/**
+ * MAPPING CLAUSOLE
+ * ----------------
+ * Questo oggetto mappa i tipi di relazione (chiavi) ai testi delle clausole.
+ * Le chiavi corrispondono ai tipi inviati dalla macchina Arduino (monitor_arduino.py)
+ * I testi corrispondono a quelli generati nel contratto PDF (contract_generator.py)
+ */
 const CLAUSE_MAPPING = {
-  CONOSCENZA: "Esplorazione preliminare.",    // Match CONOSCENZA
-  ROMANTICA: "Tensione attrattiva e vulnerabilità emotiva.", // Match ROMANTICA
-  LAVORATIVA: "Collaborazione formale, efficienza prioritaria.", // LAVORATIVA -> PROFESSIONALE text
-  AMICALE: "Supporto reciproco, tempo non strutturato.", // AMICALE -> AMICIZIA text
-  FAMILIARE: "Legame di appartenenza e obblighi impliciti.", // Match FAMILIARE
-  CONVIVENZA: "Condivisione di spazi riservati." // CONVIVENZA -> INTIMO text
+  CONOSCENZA: "Esplorazione preliminare.",                          // Tipo: Conoscenza
+  ROMANTICA: "Tensione attrattiva e vulnerabilità emotiva.",        // Tipo: Romantica
+  LAVORATIVA: "Collaborazione formale, efficienza prioritaria.",    // Tipo: Lavorativa/Professionale
+  AMICALE: "Supporto reciproco, tempo non strutturato.",            // Tipo: Amicale/Amicizia
+  FAMILIARE: "Legame di appartenenza e obblighi impliciti.",        // Tipo: Familiare
+  CONVIVENZA: "Condivisione di spazi riservati."                    // Tipo: Convivenza/Intimo
 };
 
-// Ordine esatto dei bottoni in monitor_arduino.py
+/**
+ * ORDINE BOTTONI RELAZIONI
+ * ------------------------
+ * Array che definisce l'ordine esatto dei bottoni fisici sulla macchina Arduino.
+ * Usato per convertire gli indici numerici nei tipi di relazione corrispondenti.
+ */
 const RELAZIONI_KEYS = ['CONOSCENZA', 'ROMANTICA', 'LAVORATIVA', 'AMICALE', 'FAMILIARE', 'CONVIVENZA'];
 
+/**
+ * ============================================================================
+ * COMPONENTE: LissajousFigure
+ * ============================================================================
+ * Genera una curva di Lissajous basata sui valori biometrici.
+ * La curva è una figura matematica creata dalla sovrapposizione di due
+ * oscillazioni sinusoidali su assi perpendicolari.
+ * 
+ * Props:
+ * - gsr0: valore GSR (conduttanza cutanea) del contraente A
+ * - gsr1: valore GSR del contraente B  
+ * - compatibility: percentuale di compatibilità (0-100)
+ */
 const LissajousFigure = ({ gsr0, gsr1, compatibility }) => {
+  // useRef crea un riferimento persistente all'elemento canvas del DOM
   const canvasRef = React.useRef(null);
 
+  // useEffect esegue il codice di disegno ogni volta che cambiano i valori
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) return;
+    if (!canvas) return; // Esci se il canvas non è ancora montato
+
+    // Ottiene il contesto 2D per disegnare sul canvas
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
     const height = canvas.height;
 
-    // 1. Parametri (Esattamente come lissajous.py)
-    // val_gsr è la media, qui usiamo la media di gsr0 e gsr1 passati
+    // --- CALCOLO PARAMETRI LISSAJOUS ---
+    // La media dei valori GSR determina la complessità della figura
     const val_gsr = (gsr0 + gsr1) / 2;
     const val_compat = compatibility;
 
+    // Frequenze: determinano il numero di "loop" della curva
+    // Valori GSR più alti = figure più complesse
     const freq_x = 1 + Math.floor((val_gsr / 1000.0) * 12);
     let freq_y = freq_x + 1;
-    if (freq_y === freq_x) freq_y += 1;
+    if (freq_y === freq_x) freq_y += 1; // Evita frequenze uguali (produrrebbero una linea)
 
+    // Delta: sfasamento tra le due onde, basato sulla compatibilità
+    // Compatibilità alta = figura più armonica e simmetrica
     const delta = (val_compat / 100.0) * Math.PI;
 
-    // 2. Rendering
-    ctx.clearRect(0, 0, width, height);
+    // --- DISEGNO DELLA CURVA ---
+    ctx.clearRect(0, 0, width, height); // Pulisce il canvas
     ctx.beginPath();
-    ctx.strokeStyle = '#000000'; // Nero (o rosso come in python? Python usa rosso, qui layout è BW)
+    ctx.strokeStyle = '#000000'; // Colore nero
     ctx.lineWidth = 2;
 
+    // Calcola centro e raggio della figura
     const cx = width / 2;
     const cy = height / 2;
-    const radius = (Math.min(width, height) / 2) - 10; // Padding
-    const steps = 1000;
+    const radius = (Math.min(width, height) / 2) - 10; // Padding 10px
+    const steps = 1000; // Numero di punti per una curva liscia
 
+    // Disegna la curva punto per punto
     for (let i = 0; i <= steps; i++) {
-      const t = (i / steps) * 2 * Math.PI;
+      const t = (i / steps) * 2 * Math.PI; // Parametro angolare da 0 a 2π
+
+      // Equazioni parametriche di Lissajous:
       // x = sin(freq_x * t + delta)
       // y = sin(freq_y * t)
       const x = cx + radius * Math.sin(freq_x * t + delta);
       const y = cy - radius * Math.sin(freq_y * t);
 
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
+      if (i === 0) ctx.moveTo(x, y); // Primo punto: sposta il cursore
+      else ctx.lineTo(x, y);          // Punti successivi: disegna linea
     }
-    ctx.stroke();
+    ctx.stroke(); // Applica il disegno
 
-  }, [gsr0, gsr1, compatibility]);
+  }, [gsr0, gsr1, compatibility]); // Ridisegna quando cambiano questi valori
 
+  // Ritorna un elemento canvas HTML con dimensioni 256x256 pixel
   return <canvas ref={canvasRef} width={256} height={256} className="w-full h-full" />;
 };
 
+/**
+ * ============================================================================
+ * FUNZIONE HELPER: toRoman
+ * ============================================================================
+ * Converte un numero arabo (es. 3) in numerale romano (es. "III").
+ * Usato per visualizzare la fascia di rischio in formato romano nel template story.
+ * 
+ * @param {number} num - Il numero da convertire
+ * @returns {string} Il numerale romano corrispondente
+ */
 const toRoman = (num) => {
-  if (!num) return "";
+  if (!num) return ""; // Se il numero è 0, null o undefined, ritorna stringa vuota
   let n = parseInt(num);
+
+  // Tabella di lookup: ogni simbolo romano con il suo valore
   const lookup = { M: 1000, CM: 900, D: 500, CD: 400, C: 100, XC: 90, L: 50, XL: 40, X: 10, IX: 9, V: 5, IV: 4, I: 1 };
+
   let roman = '', i;
+  // Itera sui simboli dal più grande al più piccolo
   for (i in lookup) {
     while (n >= lookup[i]) {
-      roman += i;
-      n -= lookup[i];
+      roman += i;    // Aggiunge il simbolo
+      n -= lookup[i]; // Sottrae il valore
     }
   }
   return roman;
 }
 
-// COMPARISON CHART COMPONENT
+/**
+ * ============================================================================
+ * COMPONENTE: ComparisonChart
+ * ============================================================================
+ * Visualizza un grafico comparativo dei valori SCL (Skin Conductance Level)
+ * tra i due contraenti. Include barre di progresso e una nota interpretativa.
+ * 
+ * Props:
+ * - contractData: oggetto contenente avgScl.a e avgScl.b (valori medi SCL)
+ */
 const ComparisonChart = ({ contractData }) => {
-  // SCL max reference (typical range 0-500 µS for most users)
+  // Valore massimo di riferimento per SCL (range tipico 0-500 µS)
   const SCL_MAX = 500;
 
-  // Converti SCL in percentuali (usando avgScl per valori più stabili)
+  // Estrae i valori SCL medi dai dati del contratto
+  // Usa optional chaining (?.) per evitare errori se i dati non esistono
   const sclA_value = contractData.avgScl?.a || 0;
   const sclB_value = contractData.avgScl?.b || 0;
+
+  // Calcola le percentuali per le barre di progresso
+  // Math.min(100, ...) assicura che non superi il 100%
   const sclA_pct = Math.min(100, (sclA_value / SCL_MAX * 100)).toFixed(1);
   const sclB_pct = Math.min(100, (sclB_value / SCL_MAX * 100)).toFixed(1);
 
@@ -231,94 +311,151 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
   );
 };
 
+/**
+ * ============================================================================
+ * COMPONENTE PRINCIPALE: App
+ * ============================================================================
+ * Componente root dell'applicazione. Gestisce:
+ * - Splash screen iniziale
+ * - Vista Login (inserimento nomi contraenti)
+ * - Vista Dashboard (visualizzazione contratto e bottone segnalazione)
+ * - Modal contratto digitale
+ * ============================================================================
+ */
 const App = () => {
-  // Stati dell'app
-  const [showSplash, setShowSplash] = useState(true); // Splash screen iniziale
-  const [splashFading, setSplashFading] = useState(false); // Per animazione fade-out
-  const [view, setView] = useState('LOGIN'); // LOGIN o DASHBOARD
-  const [systemStatus, setSystemStatus] = useState('MONITORING');
-  const [isPressed, setIsPressed] = useState(false);
-  const [showContract, setShowContract] = useState(false);
-  const [isClosingContract, setIsClosingContract] = useState(false); // Per animazione chiusura modal
-  const [isOpeningContract, setIsOpeningContract] = useState(false); // Per animazione apertura modal
-  const [time, setTime] = useState(new Date());
-  const [showInstallPrompt, setShowInstallPrompt] = useState(false); // Stato Prompt Installazione
-  const [doNotShowAgain, setDoNotShowAgain] = useState(false); // Checkbox "Non mostrare più"
+  // ==========================================================================
+  // STATI DELL'APPLICAZIONE (useState)
+  // ==========================================================================
+  // Ogni useState ritorna [valore, funzionePerModificarlo]
 
-  // Dati Sessione
-  const [partyA, setPartyA] = useState('');
-  const [partyB, setPartyB] = useState('');
+  // --- SPLASH SCREEN ---
+  const [showSplash, setShowSplash] = useState(true);   // true = mostra splash, false = nascosto
+  const [splashFading, setSplashFading] = useState(false); // true = animazione fade-out in corso
 
-  // Dati Contratto (Ricostruiti da QR)
+  // --- NAVIGAZIONE ---
+  const [view, setView] = useState('LOGIN'); // 'LOGIN' = schermata inserimento nomi, 'DASHBOARD' = schermata principale
+
+  // --- STATO SISTEMA SEGNALAZIONE ---
+  const [systemStatus, setSystemStatus] = useState('MONITORING'); // 'MONITORING' = in attesa, 'REPORTED' = segnalazione inviata
+  const [isPressed, setIsPressed] = useState(false); // true = bottone premuto (per animazione)
+
+  // --- MODAL CONTRATTO ---
+  const [showContract, setShowContract] = useState(false);      // true = modal visibile
+  const [isClosingContract, setIsClosingContract] = useState(false); // true = animazione slide-down in corso
+  const [isOpeningContract, setIsOpeningContract] = useState(false); // true = animazione slide-up completata
+
+  // --- OROLOGIO ---
+  const [time, setTime] = useState(new Date()); // Data/ora corrente, aggiornata ogni secondo
+
+  // --- PROMPT INSTALLAZIONE PWA ---
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false); // true = mostra suggerimento installazione
+  const [doNotShowAgain, setDoNotShowAgain] = useState(false); // true = utente ha scelto "Non mostrare più"
+
+  // ==========================================================================
+  // DATI SESSIONE (Nomi dei contraenti)
+  // ==========================================================================
+  const [partyA, setPartyA] = useState(''); // Nome Contraente A (inserito dall'utente o da URL)
+  const [partyB, setPartyB] = useState(''); // Nome Contraente B (inserito dall'utente o da URL)
+
+  // ==========================================================================
+  // DATI CONTRATTO (Ricostruiti dai parametri URL del QR code)
+  // ==========================================================================
   const [contractData, setContractData] = useState({
-    id: 'UNK-00', // da 'id'
-    date: '00.00.0000', // da 'date'
-    machineId: 'ALUA-M-V1',
-    sessionToken: '---',
-    compatibility: 0, // da 'comp'
-    riskBand: 1, // da 'fascia'
-    cost: '0,00€', // da 'cost'
-    weakLink: null, // da 'bad' (-1, 0, 1)
-    clausesText: "Dati non disponibili.", // Ricostruito da types
-    avgScl: { a: 0, b: 0 } // da avg0/avg1 - usato per Lissajous e grafico comparativo
+    id: 'UNK-00',           // Identificativo univoco del contratto (es. "ABC-123")
+    date: '00.00.0000',     // Data di stipula del contratto
+    machineId: 'ALUA-M-V1', // ID della macchina che ha generato il contratto
+    sessionToken: '---',    // Token di sessione generato casualmente
+    compatibility: 0,       // Percentuale di compatibilità tra i contraenti (0-100)
+    riskBand: 1,            // Fascia di rischio (1-5)
+    cost: '0,00€',          // Costo del contratto
+    weakLink: null,         // Indica chi è il contraente più "debole" (-1=nessuno, 0=A, 1=B)
+    clausesText: "Dati non disponibili.", // Testo delle clausole del contratto
+    avgScl: { a: 0, b: 0 }  // Valori medi SCL (conduttanza cutanea) per Lissajous e grafico
   });
 
-  // --- EFFETTO 1: INIZIALIZZAZIONE E PARSING URL ---
-  const [debugParams, setDebugParams] = useState({});
-  const [missingData, setMissingData] = useState(false);
+  // ==========================================================================
+  // STATI DEBUG E VALIDAZIONE
+  // ==========================================================================
+  const [debugParams, setDebugParams] = useState({}); // Tutti i parametri URL (per debug)
+  const [missingData, setMissingData] = useState(false); // true = dati mancanti nell'URL
 
-  // --- EFFETTO SPLASH SCREEN ---
+  // ==========================================================================
+  // EFFETTO: SPLASH SCREEN
+  // ==========================================================================
+  // Eseguito una sola volta al montaggio del componente ([] = nessuna dipendenza)
+  // Gestisce l'animazione di apparizione e scomparsa dello splash screen
   useEffect(() => {
+    // Dopo 1 secondo, avvia il fade-out
     const splashTimer = setTimeout(() => {
-      setSplashFading(true); // Avvia fade-out
-      setTimeout(() => {
-        setShowSplash(false); // Rimuove splash dopo fade
-      }, 300); // Durata fade-out veloce
-    }, 1000); // Mostra splash per 1 secondo
+      setSplashFading(true); // Attiva classe CSS per fade-out
 
+      // Dopo 300ms (durata animazione), rimuove completamente lo splash
+      setTimeout(() => {
+        setShowSplash(false);
+      }, 300);
+    }, 1000);
+
+    // Cleanup: cancella il timer se il componente viene smontato
     return () => clearTimeout(splashTimer);
   }, []);
 
+  // ==========================================================================
+  // EFFETTO: OROLOGIO E PARSING PARAMETRI URL
+  // ==========================================================================
+  // Questo effetto:
+  // 1. Avvia un timer che aggiorna l'orologio ogni secondo
+  // 2. Legge i parametri dall'URL (passati dal QR code della macchina)
+  // 3. Ricostruisce i dati del contratto dai parametri
   useEffect(() => {
+    // --- TIMER OROLOGIO ---
+    // setInterval esegue la funzione ogni 1000ms (1 secondo)
     const timer = setInterval(() => setTime(new Date()), 1000);
 
+    // --- PARSING URL ---
+    // URLSearchParams è un'API nativa per leggere parametri tipo "?id=123&name=foo"
     const params = new URLSearchParams(window.location.search);
 
-    // DEBUG: Save all params to state
+    // Salva tutti i parametri per debug (visibili nel modal quando abilitato)
     const debugObj = {};
     for (const [key, value] of params.entries()) {
       debugObj[key] = value;
     }
     setDebugParams(debugObj);
 
-    // --- PARSING NUOVI PARAMETRI (Coerenza Totale) ---
-    const q_id = params.get('id') || 'UNK-00';
-    const q_date = params.get('date') || formattedDate;
-    const q_comp = parseInt(params.get('comp') || '50');
-    const q_bad = parseInt(params.get('bad') || '-1');
-    const q_fascia = parseInt(params.get('fascia') || '1');
-    const q_cost = params.get('cost') || '0,00€';
-    const q_phrase = params.get('phrase') || "";
+    // --- ESTRAZIONE SINGOLI PARAMETRI ---
+    // params.get('nome') ritorna il valore o null se non esiste
+    // || 'default' fornisce un valore di fallback se null
+    const q_id = params.get('id') || 'UNK-00';           // ID contratto
+    const q_date = params.get('date') || formattedDate;  // Data
+    const q_comp = parseInt(params.get('comp') || '50'); // Compatibilità (intero)
+    const q_bad = parseInt(params.get('bad') || '-1');   // Weak link
+    const q_fascia = parseInt(params.get('fascia') || '1'); // Fascia rischio
+    const q_cost = params.get('cost') || '0,00€';        // Costo
+    const q_phrase = params.get('phrase') || "";         // Frase del contratto
 
-    // Parsing SCL Medie (usate per Lissajous e grafico comparativo)
-    const q_avg0 = parseFloat(params.get('avg0') || '0');
-    const q_avg1 = parseFloat(params.get('avg1') || '0');
+    // Valori SCL medi (usati per Lissajous e grafico comparativo)
+    const q_avg0 = parseFloat(params.get('avg0') || '0'); // SCL media contraente A
+    const q_avg1 = parseFloat(params.get('avg1') || '0'); // SCL media contraente B
 
-    // Parsing Clausole (RAW TYPES separati da virgola)
+    // --- PARSING CLAUSOLE ---
+    // I tipi di relazione vengono passati come stringa separata da virgole (es. "ROMANTICA,AMICALE")
     const raw_types = (params.get('types') || '').split(',').filter(x => x);
 
-    // Generazione testo diretta
+    // Genera il testo delle clausole mappando i tipi ai loro testi
     let generatedClause = "Clausola Default: Relazione indefinita.";
     if (raw_types.length > 0) {
-      // Mappa le chiavi raw nel testo usando la mappa definita (che ora è allineata a contract_generator)
+      // Usa CLAUSE_MAPPING per convertire i tipi nei testi corrispondenti
       generatedClause = raw_types.map(k => CLAUSE_MAPPING[k] || k).join(" ");
     } else {
-      // Fallback vecchi QR (retrocompatibilità se necessario, o rimuovibile)
+      // --- FALLBACK PER VECCHI QR ---
+      // I vecchi QR usavano indici numerici invece di nomi (btn0="0,1,2")
       const btn0_idx = (params.get('btn0') || '').split(',').filter(x => x).map(Number);
       const btn1_idx = (params.get('btn1') || '').split(',').filter(x => x).map(Number);
       if (btn0_idx.length > 0 || btn1_idx.length > 0) {
+        // Converte indici in chiavi usando RELAZIONI_KEYS
         const keys0 = btn0_idx.map(i => RELAZIONI_KEYS[i]).filter(k => k);
         const keys1 = btn1_idx.map(i => RELAZIONI_KEYS[i]).filter(k => k);
+        // Set rimuove duplicati, poi mappa ai testi
         const allbox = Array.from(new Set([...keys0, ...keys1]));
         if (allbox.length > 0) generatedClause = allbox.map(k => CLAUSE_MAPPING[k] || "").join(" ");
       }
@@ -381,63 +518,115 @@ const App = () => {
     }
   }, []);
 
+  // ==========================================================================
+  // HANDLER: Chiudi prompt installazione PWA
+  // ==========================================================================
+  // Chiamato quando l'utente chiude il banner di installazione
   const handleDismissInstall = () => {
+    // Se l'utente ha spuntato "Non mostrare più", salva la preferenza
     if (doNotShowAgain) {
       localStorage.setItem('alua_install_prompt_seen', 'true');
     }
-    setShowInstallPrompt(false);
+    setShowInstallPrompt(false); // Nasconde il prompt
   };
 
+  // ==========================================================================
+  // HANDLER: Login (Invio form nomi contraenti)
+  // ==========================================================================
+  // Chiamato quando l'utente preme il bottone "Inizializza Sessione"
+  // @param e - evento del form (preventDefault evita il refresh della pagina)
   const handleLogin = (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Previene il comportamento default del form (refresh)
+
+    // Procede solo se entrambi i nomi sono stati inseriti
     if (partyA && partyB) {
+      // Salva i nomi nel localStorage per ricordarli alla prossima visita
       localStorage.setItem('alua_partyA', partyA);
       localStorage.setItem('alua_partyB', partyB);
+
+      // Vibrazione feedback (se supportata dal dispositivo)
       if (navigator.vibrate) navigator.vibrate(50);
+
+      // Naviga alla dashboard
       setView('DASHBOARD');
     }
   };
 
+  // ==========================================================================
+  // HANDLER: Disconnessione / Reset sessione
+  // ==========================================================================
+  // Cancella i dati salvati e torna alla schermata di login
   const handleDisconnect = () => {
+    // Rimuove i nomi dal localStorage
     localStorage.removeItem('alua_partyA');
     localStorage.removeItem('alua_partyB');
+
+    // Resetta gli stati locali
     setPartyA('');
     setPartyB('');
     setView('LOGIN');
     setSystemStatus('MONITORING');
   };
 
+  // ==========================================================================
+  // HANDLER: Segnalazione violazione
+  // ==========================================================================
+  // Chiamato quando l'utente preme il grande bottone rosso ALUA
   const handleReport = () => {
-    setIsPressed(true);
+    setIsPressed(true); // Attiva animazione "premuto"
+
+    // Vibrazione lunga di feedback
     if (navigator.vibrate) navigator.vibrate(200);
+
+    // Dopo 800ms, completa la segnalazione
     setTimeout(() => {
-      setSystemStatus('REPORTED');
-      setIsPressed(false);
+      setSystemStatus('REPORTED'); // Cambia stato a "segnalato"
+      setIsPressed(false);          // Rilascia animazione
+
+      // Tripla vibrazione breve come conferma
       if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
     }, 800);
   };
 
+  // ==========================================================================
+  // HANDLER: Reset sistema (dopo segnalazione)
+  // ==========================================================================
+  // Riporta il sistema in modalità monitoraggio
   const resetSystem = () => {
     setSystemStatus('MONITORING');
   };
 
+  // ==========================================================================
+  // HANDLER: Chiusura modal contratto
+  // ==========================================================================
+  // Gestisce l'animazione di chiusura (slide-down) del modal
   const handleCloseContract = () => {
-    setIsClosingContract(true);
-    setIsOpeningContract(false);
+    setIsClosingContract(true);  // Attiva animazione slide-down
+    setIsOpeningContract(false); // Resetta stato apertura
+
+    // Dopo che l'animazione è completata (500ms), nasconde il modal
     setTimeout(() => {
       setShowContract(false);
       setIsClosingContract(false);
-    }, 500); // Durata animazione (uguale alla transizione)
+    }, 500);
   };
 
+  // ==========================================================================
+  // VARIABILI HELPER: Formattazione data/ora
+  // ==========================================================================
+
+  // Ora corrente formattata come "HH:mm" in italiano
   const formattedTime = time.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' });
 
-  // Modifica data: Anno corrente + 2 anni
+  // Data di scadenza del contratto: +2 anni dalla data corrente
   const futureTime = new Date(time);
   futureTime.setFullYear(futureTime.getFullYear() + 2);
   const formattedDate = futureTime.toLocaleDateString('it-IT', { day: '2-digit', month: '2-digit', year: '2-digit' });
 
-  // Helper per Weak Link Text
+  // ==========================================================================
+  // HELPER: Testo per indicare instabilità di un contraente
+  // ==========================================================================
+  // Ritorna un messaggio di avviso se uno dei contraenti mostra instabilità
   const getWeakLinkText = () => {
     if (contractData.weakLink === 0) return `NOTA CRITICA: Instabilità rilevata in CONTRAENTE A.`;
     if (contractData.weakLink === 1) return `NOTA CRITICA: Instabilità rilevata in CONTRAENTE B.`;
@@ -893,6 +1082,19 @@ const App = () => {
               </div>
             </div>
 
+            {/* BOTTONE PDF - Subito dopo i nomi */}
+            <a
+              href="/contratto.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full bg-white text-black py-4 flex items-center justify-center gap-3 px-6 hover:bg-black hover:text-white transition-all border-2 border-black group cursor-pointer"
+            >
+              <FileText size={18} />
+              <span className="text-sm font-bold tracking-widest uppercase font-neue-haas group-hover:underline decoration-white underline-offset-4">
+                VISUALIZZA CONTRATTO COMPLETO
+              </span>
+            </a>
+
             {/* Sezione Statistiche Chiave */}
             <div className="flex items-center gap-8 bg-gray-50 p-6 border border-gray-200">
               <div className="flex-1 text-center border-r border-gray-300">
@@ -941,24 +1143,12 @@ const App = () => {
 
             {/* Disclaimer Debolezza REMOVED FROM HERE */}
 
-            {/* BOTTONE PDF PARTE FISSA */}
-            <a
-              href="/contratto.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full bg-white text-black py-4 mt-8 flex items-center justify-center gap-3 px-6 hover:bg-black hover:text-white transition-all border-2 border-black group cursor-pointer"
-            >
-              <FileText size={18} />
-              <span className="text-sm font-bold tracking-widest uppercase font-neue-haas group-hover:underline decoration-white underline-offset-4">
-                VISUALIZZA CONTRATTO COMPLETO
-              </span>
-            </a>
-
-            {/* --- DEBUG DATA SECTION --- */}
+            {/* --- DEBUG DATA SECTION (Commentato - rimuovi i commenti per ripristinare) ---
             <div className="mt-12 p-4 bg-gray-100 border border-gray-300 font-mono text-[10px] text-gray-600">
               <p className="font-bold mb-2">DEBUG INFO (RAW PARAMS):</p>
               <pre className="whitespace-pre-wrap">{JSON.stringify(debugParams, null, 2)}</pre>
             </div>
+            */}
 
             {/* Footer Digitale */}
             <div className="pt-12 mt-8 text-center border-t border-gray-100">
