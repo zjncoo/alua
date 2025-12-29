@@ -1112,6 +1112,16 @@ const App = () => {
           </button>
         </div>
 
+        {/* Footer Certificato Digitale - uguale al modale */}
+        <div className="w-full text-center py-4 border-t border-gray-200">
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">
+            Certificato Digitalmente da ALUA Systems
+          </p>
+          <p className="text-[10px] text-gray-300 font-mono">
+            ID: {contractData.id} • Stipulato il {contractData.date}
+          </p>
+        </div>
+
         {/* LEGAL FOOTER */}
         <div className="w-full pt-4 border-t border-gray-200 text-[9px] leading-relaxed text-gray-400 normal-case text-left font-sans">
           <p className="font-bold text-black mb-2">Alua S.p.A.</p>
