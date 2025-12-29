@@ -508,7 +508,8 @@ const App = () => {
       <div
         className={`fixed inset-0 z-[200] bg-white flex items-center justify-center ${splashFading ? 'opacity-0' : 'opacity-100'}`}
         style={{
-          transition: 'opacity 300ms ease-out'
+          transition: 'opacity 300ms ease-out',
+          height: '100dvh'
         }}
       >
         <img src="/logo_alua.svg" alt="ALUA" className="h-16 md:h-20 w-auto" />
@@ -655,19 +656,19 @@ const App = () => {
       <header className="px-8 py-8 flex justify-between items-start bg-white border-b-2 border-black z-20 sticky top-0">
         <div>
           <a href="https://zjncoo.github.io/ALUA.IT/" target="_blank" rel="noopener noreferrer">
-            <img src="/logo_alua.svg" alt="ALUA" className="h-10 w-auto mb-2 hover:opacity-70 transition-opacity" />
+            <img src="/logo_alua.svg" alt="ALUA" className="h-10 w-auto hover:opacity-70 transition-opacity" />
           </a>
-          <div className="flex items-center space-x-3 mt-1">
+          <div className="flex items-center space-x-3 mt-2">
             {/* Stato Sistema: Solo pallino soave */}
             <div className={`w-3 h-3 rounded-full ${systemStatus === 'MONITORING' ? 'bg-black animate-pulse-slow' : 'bg-red-500'}`}></div>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-2 font-bergen-mono">
-          <div className="text-right">
-            <span className="text-xs block mb-1">{formattedDate}</span>
-            <span className="text-xs text-gray-400 block">{formattedTime}</span>
-          </div>
-          <div className="flex items-center gap-6 mt-2">
+        <div className="flex flex-col items-end font-bergen-mono">
+          <div className="flex items-start gap-4">
+            <div className="text-right">
+              <span className="text-xs block">{formattedDate}</span>
+              <span className="text-xs text-gray-400 block">{formattedTime}</span>
+            </div>
             <button onClick={handleShare} className="text-black hover:opacity-70 transition-opacity">
               <Share size={24} strokeWidth={1.5} />
             </button>
