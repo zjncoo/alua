@@ -838,6 +838,21 @@ const App = () => {
               <span className="text-xl">→</span>
             </button>
           </form>
+
+          {/* Copyright ALUA SYSTEMS - LOGIN SCREEN */}
+          <div className="w-full text-center pt-8 border-t-2 border-green-500/0"> {/* border trasparente per spacing */}
+            <p className="text-[10px] text-gray-400 uppercase tracking-widest flex items-center justify-center gap-1">
+              <span className="text-sm font-bold">©</span> 2025 ALUA SYSTEMS
+            </p>
+            <a
+              href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.it"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[9px] text-gray-400 hover:text-black transition-colors underline"
+            >
+              CC BY-NC-ND (Attribuzione - Non Commerciale - Non Opere Derivate)
+            </a>
+          </div>
         </div>
 
         {/* INSTALL PROMPT OVERLAY (iOS Style) - MOVED TO LOGIN VIEW */}
@@ -1126,8 +1141,8 @@ const App = () => {
 
         {/* Copyright ALUA SYSTEMS */}
         <div className="w-[calc(100%+4rem)] -mx-8 text-center py-4 border-t-2 border-black px-8">
-          <p className="text-[10px] text-gray-400 uppercase tracking-widest">
-            © 2025 ALUA SYSTEMS
+          <p className="text-[10px] text-gray-400 uppercase tracking-widest flex items-center justify-center gap-1">
+            <span className="text-sm font-bold">©</span> 2025 ALUA SYSTEMS
           </p>
           <a
             href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.it"
