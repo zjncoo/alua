@@ -331,6 +331,7 @@ const App = () => {
   // --- SPLASH SCREEN ---
   const [showSplash, setShowSplash] = useState(true);   // true = mostra splash, false = nascosto
   const [splashFading, setSplashFading] = useState(false); // true = animazione fade-out in corso
+  const [contentVisible, setContentVisible] = useState(false); // true = contenuto app visibile (per fade-in)
 
   // --- NAVIGAZIONE ---
   const [view, setView] = useState('LOGIN'); // 'LOGIN' = schermata inserimento nomi, 'DASHBOARD' = schermata principale
@@ -388,6 +389,7 @@ const App = () => {
     // Dopo 1 secondo, avvia il fade-out
     const splashTimer = setTimeout(() => {
       setSplashFading(true); // Attiva classe CSS per fade-out
+      setContentVisible(true); // Attiva fade-in del contenuto in sincrono
 
       // Dopo 300ms (durata animazione), rimuove completamente lo splash
       setTimeout(() => {
@@ -709,7 +711,10 @@ const App = () => {
   // --- VISTA 1: IDENTIFICAZIONE (LOGIN) ---
   if (view === 'LOGIN') {
     return (
-      <div className="min-h-[100dvh] w-full flex flex-col items-center justify-center bg-white p-8 font-bergen-mono text-black">
+      <div
+        className={`min-h-[100dvh] w-full flex flex-col items-center justify-center bg-white p-8 font-bergen-mono text-black ${contentVisible ? 'opacity-100' : 'opacity-0'}`}
+        style={{ transition: 'opacity 300ms ease-out' }}
+      >
         <style>
           {`
             @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
@@ -839,7 +844,10 @@ const App = () => {
 
   // --- VISTA 2: INTERFACCIA PRINCIPALE (DASHBOARD) ---
   return (
-    <div className="min-h-[100dvh] w-full flex flex-col bg-white font-bergen-mono text-black overflow-hidden relative">
+    <div
+      className={`min-h-[100dvh] w-full flex flex-col bg-white font-bergen-mono text-black overflow-hidden relative ${contentVisible ? 'opacity-100' : 'opacity-0'}`}
+      style={{ transition: 'opacity 300ms ease-out' }}
+    >
 
       {/* Header Fisso */}
       <header className="px-8 py-8 flex justify-between items-start bg-white border-b-2 border-black z-20 sticky top-0">
