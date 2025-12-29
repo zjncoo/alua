@@ -273,7 +273,7 @@ const App = () => {
       setSplashExiting(true); // Avvia animazione slide-up
       setTimeout(() => {
         setShowSplash(false); // Rimuove splash dopo animazione
-      }, 500); // Durata animazione slide-up
+      }, 700); // Sincronizzato con durata CSS (700ms)
     }, 1000); // Mostra splash per 1 secondo
 
     return () => clearTimeout(splashTimer);
