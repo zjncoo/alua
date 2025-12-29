@@ -956,7 +956,6 @@ const App = () => {
               <span className="font-bergen-mono text-[16pt] font-bold uppercase leading-tight block text-black whitespace-pre-line">
                 {formatItalianText(contractData.phrase)}
               </span>
-              <div className="w-12 h-1 bg-black mt-4"></div>
             </div>
           </div>
         )}
@@ -1087,11 +1086,6 @@ const App = () => {
 
       {/* Footer Fisso */}
       <footer className="px-8 py-6 border-t-2 border-black bg-white text-black flex flex-col font-bergen-mono z-20">
-        {/* Contract ID - Top Left */}
-        <div className="w-full mb-4">
-          <span className="text-[10px] text-gray-500 uppercase tracking-widest">ID: {contractData.id}</span>
-        </div>
-
         {/* Main Actions - Centered Stacked */}
         <div className="w-full flex flex-col items-center gap-4 mb-6">
           <a
@@ -1112,7 +1106,7 @@ const App = () => {
         </div>
 
         {/* Footer Certificato Digitale - uguale al modale */}
-        <div className="w-full text-center py-4 border-t border-gray-200">
+        <div className="w-full text-center py-4 border-t-2 border-black">
           <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">
             Certificato Digitalmente da ALUA Systems
           </p>
@@ -1122,7 +1116,7 @@ const App = () => {
         </div>
 
         {/* LEGAL FOOTER */}
-        <div className="w-full pt-4 border-t border-gray-200 text-[9px] leading-relaxed text-gray-400 normal-case text-left font-sans">
+        <div className="w-full pt-4 border-t-2 border-black text-[9px] leading-relaxed text-gray-400 normal-case text-left font-sans">
           <p className="font-bold text-black mb-2">Alua S.p.A.</p>
           <p className="leading-tight">
             Sede Legale: Via Cordusio 7, 20123 Milano - assicurazioni@pec.alua.it - tel +39 045 8172117 - fax +39 045 8172630<br />
@@ -1220,7 +1214,7 @@ const App = () => {
             */}
 
             {/* Footer Digitale */}
-            <div className="pt-12 mt-8 text-center border-t border-gray-100">
+            <div className="pt-12 mt-8 text-center border-t-2 border-black">
               <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">
                 Certificato Digitalmente da ALUA Systems
               </p>
