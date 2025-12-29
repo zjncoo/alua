@@ -912,7 +912,10 @@ const App = () => {
           <span className="text-xs text-gray-400 block">{formattedTime}</span>
           <div className="flex items-center space-x-3 mt-2">
             {/* Stato Sistema: Solo pallino soave */}
-            <div className={`w-3 h-3 rounded-full ${systemStatus === 'MONITORING' ? 'bg-black animate-pulse-slow' : 'bg-red-500'}`}></div>
+            <div
+              className={`w-3 h-3 rounded-full ${systemStatus === 'MONITORING' ? 'animate-pulse-slow' : ''}`}
+              style={{ backgroundColor: systemStatus === 'MONITORING' ? '#342152' : '#ef4444' }}
+            ></div>
           </div>
         </div>
         {/* Destra: Logo */}
