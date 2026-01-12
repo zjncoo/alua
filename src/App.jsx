@@ -286,7 +286,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       {/* HEADER */}
       <div className="w-full flex justify-between items-start pt-16 mb-2 px-4">
         <div className="text-left flex flex-col justify-center">
-          <span className="text-3xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
+          <span className="text-xl uppercase tracking-widest text-gray-400">Verifica parte della macchina</span>
           <span className="text-4xl font-bold uppercase tracking-widest mt-2">EyeDeal di ALUA</span>
         </div>
         <img src="/logo_alua.png" alt="ALUA" className="w-[460px] h-auto object-contain object-right flex-shrink-0" />
