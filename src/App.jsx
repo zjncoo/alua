@@ -276,10 +276,10 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
       style={{
         width: '1080px',
         height: '1920px',
-        zIndex: -100,
+        zIndex: -9999,
         left: '-9999px',      // Sposta completamente fuori dalla viewport
         top: '-9999px',
-        visibility: 'hidden', // Nasconde visivamente ma mantiene renderizzato per html2canvas
+        // visibility: 'hidden', // RIMOSSO: html2canvas ha problemi con elementi hidden
         pointerEvents: 'none' // Non intercetta click
       }}
     >
@@ -713,6 +713,7 @@ const App = () => {
           const el = clonedDoc.getElementById('share-story-template');
           if (el) {
             el.style.display = 'flex';
+            el.style.visibility = 'visible';
             el.style.left = '0px';
             el.style.top = '0px';
           }
