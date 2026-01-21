@@ -908,18 +908,7 @@ const App = () => {
         {/* LISSAJOUS + FRASE DEDICATA (Sopra Info Card, Allineato a SX) */}
         {contractData.phrase && (
           <div className="flex flex-col items-start justify-start gap-4 mb-8 w-full animate-in fade-in slide-in-from-top-4 duration-700">
-            {/* Disclaimer Debolezza - MOVED HERE */}
-            {getWeakLinkText() && (
-              <div className="bg-red-50 p-4 border-l-4 border-red-600 text-red-900 mb-2 w-full max-w-md text-left">
-                <div className="flex items-center gap-2 mb-1">
-                  <AlertTriangle size={16} />
-                  <span className="font-bold text-xs uppercase tracking-widest">Attenzione</span>
-                </div>
-                <p className="text-sm font-bold leading-tight">
-                  {getWeakLinkText()}
-                </p>
-              </div>
-            )}
+
 
             {/* Visualizzazione Lissajous - AL VIVO */}
             <div className="w-48 h-48 relative">
