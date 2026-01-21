@@ -192,79 +192,7 @@ const formatItalianText = (text) => {
   return result;
 };
 
-/**
- * ============================================================================
- * COMPONENTE: ComparisonChart
- * ============================================================================
- * Visualizza un grafico comparativo dei valori SCL (Skin Conductance Level)
- * tra i due contraenti. Include barre di progresso e una nota interpretativa.
- * 
- * Props:
- * - contractData: oggetto contenente avgScl.a e avgScl.b (valori medi SCL)
- */
-const ComparisonChart = ({ contractData }) => {
-  // Valore massimo di riferimento per SCL (range tipico 0-500 µS)
-  const SCL_MAX = 500;
 
-  // Estrae i valori SCL medi dai dati del contratto
-  // Usa optional chaining (?.) per evitare errori se i dati non esistono
-  const sclA_value = contractData.avgScl?.a || 0;
-  const sclB_value = contractData.avgScl?.b || 0;
-
-  // Calcola le percentuali per le barre di progresso
-  // Math.min(100, ...) assicura che non superi il 100%
-  const sclA_pct = Math.min(100, (sclA_value / SCL_MAX * 100)).toFixed(1);
-  const sclB_pct = Math.min(100, (sclB_value / SCL_MAX * 100)).toFixed(1);
-
-  return (
-    <div className="w-full space-y-6 border-2 border-black p-6 bg-white">
-      <div className="flex items-center gap-2 mb-4 border-b-2 border-black pb-3">
-        <div className="w-2 h-2 bg-black"></div>
-        <span className="text-sm font-bold uppercase tracking-widest font-neue-haas">Analisi Comparativa</span>
-      </div>
-
-      {/* SCL VALUES */}
-      <div className="space-y-4">
-        <span className="text-xs uppercase tracking-widest text-gray-500 block">Media Conduttanza Cutanea (SCL)</span>
-
-        {/* Contraente A */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-xs font-bold uppercase">Contraente A</span>
-            <span className="text-sm font-bergen-mono font-bold">{sclA_value.toFixed(1)} µS</span>
-          </div>
-          <div className="w-full h-3 bg-gray-100 border border-gray-300 relative overflow-hidden">
-            <div
-              className="h-full bg-black transition-all duration-300"
-              style={{ width: `${sclA_pct}%` }}
-            ></div>
-          </div>
-        </div>
-
-        {/* Contraente B */}
-        <div className="space-y-2">
-          <div className="flex justify-between items-center">
-            <span className="text-xs font-bold uppercase">Contraente B</span>
-            <span className="text-sm font-bergen-mono font-bold">{sclB_value.toFixed(1)} µS</span>
-          </div>
-          <div className="w-full h-3 bg-gray-100 border border-gray-300 relative overflow-hidden">
-            <div
-              className="h-full bg-gray-800 transition-all duration-300"
-              style={{ width: `${sclB_pct}%` }}
-            ></div>
-          </div>
-        </div>
-      </div>
-
-      {/* DISCLAIMER */}
-      <div className="pt-4 border-t border-gray-300 bg-gray-50 p-4 -mx-6 -mb-6">
-        <p className="text-[10px] text-gray-600 leading-relaxed font-sans">
-          <span className="font-bold text-black">Nota interpretativa:</span> La Conduttanza Cutanea (SCL) è un indicatore biometrico dell'attivazione psicofisiologica. Valori più elevati indicano un maggiore livello di arousal emotivo registrato durante l'esperienza interattiva. Un'SCL più alta può riflettere stati di attivazione, coinvolgimento emotivo o reattività fisiologica incrementata del soggetto nel contesto dell'interazione relazionale analizzata.
-        </p>
-      </div>
-    </div>
-  );
-};
 
 
 // TEMPLATE GRAFICO PER INSTAGRAM STORIES (Hidden but rendered)
@@ -426,7 +354,9 @@ const App = () => {
     cost: '0,00€',          // Costo del contratto
     weakLink: null,         // Indica chi è il contraente più "debole" (-1=nessuno, 0=A, 1=B)
     clausesText: "Dati non disponibili.", // Testo delle clausole del contratto
-    avgScl: { a: 0, b: 0 }  // Valori medi SCL (conduttanza cutanea) per Lissajous e grafico
+    clausesText: "Dati non disponibili.", // Testo delle clausole del contratto
+    avgScl: { a: 0, b: 0 },  // Valori medi SCL (conduttanza cutanea) per Lissajous e grafico
+    relTypes: []            // Array dei tipi di relazione (es. ['ROMANTICA', 'AMICALE'])
   });
 
   // ==========================================================================
@@ -500,8 +430,11 @@ const App = () => {
 
     // Genera il testo delle clausole mappando i tipi ai loro testi
     let generatedClause = "Clausola Default: Relazione indefinita.";
+    let generatedRelTypes = []; // Array per i tipi di relazione
+
     if (raw_types.length > 0) {
       // Usa CLAUSE_MAPPING per convertire i tipi nei testi corrispondenti
+      generatedRelTypes = raw_types; // Salva i tipi grezzi
       generatedClause = raw_types.map(k => CLAUSE_MAPPING[k] || k).join(" ");
     } else {
       // --- FALLBACK PER VECCHI QR ---
@@ -514,7 +447,10 @@ const App = () => {
         const keys1 = btn1_idx.map(i => RELAZIONI_KEYS[i]).filter(k => k);
         // Set rimuove duplicati, poi mappa ai testi
         const allbox = Array.from(new Set([...keys0, ...keys1]));
-        if (allbox.length > 0) generatedClause = allbox.map(k => CLAUSE_MAPPING[k] || "").join(" ");
+        if (allbox.length > 0) {
+          generatedRelTypes = allbox; // Salva i tipi grezzi
+          generatedClause = allbox.map(k => CLAUSE_MAPPING[k] || "").join(" ");
+        }
       }
     }
 
@@ -529,7 +465,8 @@ const App = () => {
       weakLink: q_bad,
       clausesText: generatedClause,
       phrase: q_phrase,
-      avgScl: { a: q_avg0, b: q_avg1 } // Medie SCL per Lissajous e grafico comparativo
+      avgScl: { a: q_avg0, b: q_avg1 }, // Medie SCL per Lissajous e grafico comparativo
+      relTypes: generatedRelTypes       // Salva i tipi di relazione
     });
 
     // Gestione Nomi (QR vs Memoria)
@@ -558,6 +495,24 @@ const App = () => {
 
     return () => clearInterval(timer);
   }, []);
+
+  // --- EFFETTO: BODY SCROLL LOCK ---
+  useEffect(() => {
+    if (showContract) {
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.width = '100%';
+    } else {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.width = '';
+    };
+  }, [showContract]);
 
   // --- EFFETTO 2: INSTALL PROMPT CHECK ---
   useEffect(() => {
@@ -796,16 +751,16 @@ const App = () => {
           {/* Dati Macchina */}
           <div className="w-full border-2 border-gray-200 p-6 space-y-4 mt-8">
             <div className="flex items-center justify-between border-b border-gray-200 pb-2 mb-4">
-              <span className="text-xs uppercase tracking-widest font-bergen-mono text-gray-500">Dati Sorgente</span>
+              <span className="text-xs uppercase tracking-widest font-bergen-mono text-gray-500">Dati Polizza</span>
               <div className="w-2 h-2 bg-black"></div>
             </div>
             <div className="grid grid-cols-2 gap-8 font-bergen-mono">
               <div>
-                <span className="block text-xs uppercase text-gray-500 mb-1">ID Contratto</span>
+                <span className="block text-xs uppercase text-gray-500 mb-1">PRATICA N.</span>
                 <span className="text-sm font-bold">{contractData.id}</span>
               </div>
               <div>
-                <span className="block text-xs uppercase text-gray-500 mb-1">Compatibilità</span>
+                <span className="block text-xs uppercase text-gray-500 mb-1">% AFFINITÀ</span>
                 <span className="text-sm font-bold">{contractData.compatibility}%</span>
               </div>
             </div>
@@ -1025,14 +980,24 @@ const App = () => {
             </div>
           </div>
 
+          {/* ALERT DEBOLEZZA (DASHBOARD) */}
+          {getWeakLinkText() && (
+            <div className="w-full bg-gray-100 border-2 border-black p-4 mb-6 flex items-center justify-center gap-3">
+              <AlertTriangle size={16} className="text-black" />
+              <span className="text-xs font-bold uppercase tracking-widest text-black">
+                {getWeakLinkText()}
+              </span>
+            </div>
+          )}
+
           {/* Mini Stat - AGGIORNATA PER COMPATIBILITA' GRANDE */}
           <div className="pt-6 border-t border-gray-100 flex items-end justify-between">
             <div>
-              <span className="text-xs uppercase tracking-widest text-gray-400 block pb-2">GRADO DI COMPATIBILITÀ</span>
+              <span className="text-xs uppercase tracking-widest text-gray-400 block pb-2">AFFINITÀ INTERPERSONALE</span>
               <span className="text-6xl font-bold font-bergen-mono">{contractData.compatibility}%</span>
             </div>
             <div className="text-right">
-              <span className="text-[10px] uppercase tracking-widest text-gray-400 block pb-1">FASCIA</span>
+              <span className="text-[10px] uppercase tracking-widest text-gray-400 block pb-1">FASCIA DI RISCHIO</span>
               <span className="text-2xl font-bold">{contractData.riskBand}</span>
             </div>
           </div>
@@ -1111,14 +1076,6 @@ const App = () => {
       <footer className="px-8 py-6 border-t-2 border-black bg-white text-black flex flex-col font-bergen-mono z-20">
         {/* Main Actions - Centered Stacked */}
         <div className="w-full flex flex-col items-center gap-4 mb-6">
-          <a
-            href="https://zjncoo.github.io/ALUA.IT/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-bold text-black border-b-2 border-black hover:opacity-50 transition-opacity uppercase tracking-widest"
-          >
-            Scopri il progetto ALUA
-          </a>
 
           <button
             onClick={handleDisconnect}
@@ -1170,8 +1127,8 @@ const App = () => {
             transition: 'transform 500ms cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
-          {/* Modal Header - STICKY */}
-          <div className="sticky top-0 z-10 p-6 border-b-2 border-black flex justify-between items-center bg-white shadow-sm">
+          {/* Modal Header - FIXED within Flex */}
+          <div className="z-10 p-6 border-b-2 border-black flex justify-between items-center bg-white shadow-sm">
             <div className="flex flex-col">
               <span className="text-[10px] uppercase tracking-widest text-gray-500">Contratto Digitale</span>
               <span className="text-xl font-bold tracking-tight font-neue-haas">CONTRATTO {contractData.id}</span>
@@ -1181,8 +1138,8 @@ const App = () => {
             </button>
           </div>
 
-          {/* Modal Body - SCROLLABLE */}
-          <div className="flex-1 overflow-y-auto p-8 space-y-12 bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
+          {/* Modal Body - SCROLLABLE with Extra Padding */}
+          <div className="flex-1 overflow-y-auto p-8 pb-12 space-y-12 bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
 
             {/* BOTTONE PDF */}
             <a
@@ -1197,14 +1154,25 @@ const App = () => {
               </span>
             </a>
 
+            {/* ALERT DEBOLEZZA (RE-ADDED & RESTYLED) */}
+            {getWeakLinkText() && (
+              <div className="w-full bg-gray-100 border-2 border-black p-4 mb-0 flex items-center justify-center gap-3">
+                <AlertTriangle size={16} className="text-black" />
+                <span className="text-xs font-bold uppercase tracking-widest text-black">
+                  {getWeakLinkText()}
+                </span>
+              </div>
+            )}
+
+            {/* Tabella Fascia Rischio e Costo */}
             {/* Tabella Fascia Rischio e Costo */}
             <div className="grid grid-cols-2 border-2 border-black bg-white">
               <div className="py-6 px-4 flex flex-col items-center justify-center border-r-2 border-black">
-                <span className="text-[10px] uppercase tracking-widest text-gray-500 block mb-2">Fascia Rischio</span>
+                <span className="text-[10px] uppercase tracking-widest text-gray-500 block mb-2">Fascia di Rischio</span>
                 <span className="text-4xl font-bold font-bergen-mono">{contractData.riskBand}</span>
               </div>
               <div className="py-6 px-4 flex flex-col items-center justify-center">
-                <span className="text-[10px] uppercase tracking-widest text-gray-500 block mb-2">Costo</span>
+                <span className="text-[10px] uppercase tracking-widest text-gray-500 block mb-2">Premio Annuo</span>
                 <span className="text-4xl font-bold font-bergen-mono">{contractData.cost}</span>
               </div>
             </div>
@@ -1229,28 +1197,25 @@ const App = () => {
             </div>
 
             {/* Clausole */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 bg-black"></div>
-                <span className="text-sm font-bold uppercase tracking-widest font-neue-haas">Clausole Concordate</span>
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-2 h-2 bg-black"></div>
+              <span className="text-sm font-bold uppercase tracking-widest font-neue-haas">Clausole Concordate</span>
+            </div>
+
+            {/* BADGES TIPI RELAZIONE */}
+            {contractData.relTypes && contractData.relTypes.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-3 px-6">
+                {contractData.relTypes.map((type, idx) => (
+                  <span key={idx} className="bg-black text-white text-[10px] font-bold uppercase px-2 py-1 tracking-widest">
+                    {type}
+                  </span>
+                ))}
               </div>
-              <p className="text-sm leading-relaxed text-justify opacity-90 border-l-4 border-black pl-6 py-2">
-                {contractData.clausesText}
-              </p>
-            </div>
+            )}
 
-            {/* COMPARISON CHART - NEW */}
-            <ComparisonChart contractData={contractData} />
-
-            {/* Disclaimer Debolezza REMOVED FROM HERE */}
-
-            {/* --- DEBUG DATA SECTION (Commentato - rimuovi i commenti per ripristinare) ---
-            <div className="mt-12 p-4 bg-gray-100 border border-gray-300 font-mono text-[10px] text-gray-600">
-              <p className="font-bold mb-2">DEBUG INFO (RAW PARAMS):</p>
-              <pre className="whitespace-pre-wrap">{JSON.stringify(debugParams, null, 2)}</pre>
-            </div>
-            */}
-
+            <p className="text-sm leading-relaxed text-justify opacity-90 border-l-4 border-black pl-6 py-2">
+              {contractData.clausesText}
+            </p>
             {/* Footer Digitale */}
             <div className="pt-12 mt-8 text-center border-t-2 border-black">
               <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">
