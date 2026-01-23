@@ -1261,13 +1261,37 @@ const App = () => {
           </div>
 
           {/* Modal Body - PDF Viewer */}
-          <div className="flex-1 overflow-hidden bg-gray-100" style={{ WebkitOverflowScrolling: 'touch' }}>
-            <iframe
-              src="/contratto.pdf"
-              title="ALUA - Condizioni Generali di Contratto"
-              className="w-full h-full border-0"
-              style={{ minHeight: '100%' }}
-            />
+          <div className="flex-1 overflow-auto bg-gray-100 flex flex-col" style={{ WebkitOverflowScrolling: 'touch' }}>
+            {/* PDF Embed con Object + Fallback per Mobile */}
+            <object
+              data="/contratto.pdf"
+              type="application/pdf"
+              className="w-full flex-1 border-0"
+              style={{ minHeight: 'calc(100vh - 120px)' }}
+            >
+              {/* Fallback per browser mobile che non supportano PDF inline */}
+              <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                <FileText size={48} className="text-gray-400 mb-4" />
+                <p className="text-sm text-gray-600 mb-6 font-bergen-mono uppercase tracking-widest">
+                  Il tuo browser non supporta la visualizzazione PDF integrata.
+                </p>
+                <a
+                  href="/contratto.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-black text-white py-4 px-8 text-sm font-bold tracking-widest uppercase font-neue-haas hover:bg-gray-900 transition-colors"
+                >
+                  Apri PDF in Nuova Scheda
+                </a>
+                <a
+                  href="/contratto.pdf"
+                  download="ALUA_Condizioni_Generali.pdf"
+                  className="mt-4 text-xs uppercase tracking-widest text-gray-500 hover:text-black transition-colors underline"
+                >
+                  Oppure Scarica il PDF
+                </a>
+              </div>
+            </object>
           </div>
         </div>
       )}
