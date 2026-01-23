@@ -328,6 +328,11 @@ const App = () => {
   const [isClosingContract, setIsClosingContract] = useState(false); // true = animazione slide-down in corso
   const [isOpeningContract, setIsOpeningContract] = useState(false); // true = animazione slide-up completata
 
+  // --- MODAL PDF CONTRATTO COMPLETO ---
+  const [showFullContract, setShowFullContract] = useState(false);      // true = modal PDF visibile
+  const [isClosingFullContract, setIsClosingFullContract] = useState(false); // true = animazione slide-down in corso
+  const [isOpeningFullContract, setIsOpeningFullContract] = useState(false); // true = animazione slide-up completata
+
   // --- OROLOGIO ---
   const [time, setTime] = useState(new Date()); // Data/ora corrente, aggiornata ogni secondo
 
@@ -498,7 +503,7 @@ const App = () => {
 
   // --- EFFETTO: BODY SCROLL LOCK ---
   useEffect(() => {
-    if (showContract) {
+    if (showContract || showFullContract) {
       document.body.style.overflow = 'hidden';
       document.body.style.position = 'fixed';
       document.body.style.width = '100%';
@@ -512,7 +517,7 @@ const App = () => {
       document.body.style.position = '';
       document.body.style.width = '';
     };
-  }, [showContract]);
+  }, [showContract, showFullContract]);
 
   // --- EFFETTO 2: INSTALL PROMPT CHECK ---
   useEffect(() => {
@@ -620,6 +625,21 @@ const App = () => {
     setTimeout(() => {
       setShowContract(false);
       setIsClosingContract(false);
+    }, 500);
+  };
+
+  // ==========================================================================
+  // HANDLER: Chiusura modal PDF contratto completo
+  // ==========================================================================
+  // Gestisce l'animazione di chiusura (slide-down) del modal PDF
+  const handleCloseFullContract = () => {
+    setIsClosingFullContract(true);  // Attiva animazione slide-down
+    setIsOpeningFullContract(false); // Resetta stato apertura
+
+    // Dopo che l'animazione è completata (500ms), nasconde il modal
+    setTimeout(() => {
+      setShowFullContract(false);
+      setIsClosingFullContract(false);
     }, 500);
   };
 
@@ -1131,17 +1151,20 @@ const App = () => {
           <div className="flex-1 overflow-y-auto p-8 pb-12 space-y-12 bg-white" style={{ WebkitOverflowScrolling: 'touch' }}>
 
             {/* BOTTONE PDF */}
-            <a
-              href="/contratto.pdf"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => {
+                setShowFullContract(true);
+                requestAnimationFrame(() => {
+                  setIsOpeningFullContract(true);
+                });
+              }}
               className="w-full bg-white text-black py-4 flex items-center justify-center gap-3 px-6 hover:bg-black hover:text-white transition-all border-2 border-black group cursor-pointer"
             >
               <FileText size={18} />
               <span className="text-sm font-bold tracking-widest uppercase font-neue-haas group-hover:underline decoration-white underline-offset-4">
                 VISUALIZZA CONTRATTO COMPLETO
               </span>
-            </a>
+            </button>
 
             {/* ALERT DEBOLEZZA (RE-ADDED & RESTYLED) */}
             {getWeakLinkText() && (
@@ -1214,6 +1237,37 @@ const App = () => {
                 ID: {contractData.id} • Stipulato il {contractData.date}
               </p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PDF - CONDIZIONI GENERALI DI CONTRATTO */}
+      {showFullContract && (
+        <div
+          className={`fixed inset-0 z-50 bg-white flex flex-col font-bergen-mono overflow-hidden ${isClosingFullContract ? 'translate-y-full' : isOpeningFullContract ? 'translate-y-0' : 'translate-y-full'}`}
+          style={{
+            transition: 'transform 500ms cubic-bezier(0.4, 0, 0.2, 1)'
+          }}
+        >
+          {/* Modal Header - FIXED within Flex */}
+          <div className="z-10 p-6 border-b-2 border-black flex justify-between items-center bg-white shadow-sm">
+            <div className="flex flex-col">
+              <span className="text-[10px] uppercase tracking-widest text-gray-500">Documento Ufficiale</span>
+              <span className="text-xl font-bold tracking-tight font-neue-haas">ALUA - CONDIZIONI GENERALI DI CONTRATTO</span>
+            </div>
+            <button onClick={handleCloseFullContract} className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition-colors">
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Modal Body - PDF Viewer */}
+          <div className="flex-1 overflow-hidden bg-gray-100" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <iframe
+              src="/contratto.pdf"
+              title="ALUA - Condizioni Generali di Contratto"
+              className="w-full h-full border-0"
+              style={{ minHeight: '100%' }}
+            />
           </div>
         </div>
       )}
