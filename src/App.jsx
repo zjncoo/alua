@@ -12,11 +12,19 @@
 // React: libreria principale per creare interfacce utente
 // useState: hook per gestire lo stato dei componenti (es. showContract, partyA)
 // useEffect: hook per eseguire effetti collaterali (es. timer, fetch dati da URL)
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 // Lucide-react: libreria di icone vettoriali usate nell'interfaccia
 // Ogni icona è un componente React (es. <FileText /> per l'icona documento)
-import { AlertTriangle, FileText, ArrowRight, ShieldCheck, Activity, Users, Server, Database, X, LogOut, CheckCircle, Share } from 'lucide-react';
+import { AlertTriangle, FileText, ArrowRight, ShieldCheck, Activity, Users, Server, Database, X, LogOut, CheckCircle, Share, ZoomIn, ZoomOut, RotateCw } from 'lucide-react';
+
+// React-PDF: visualizzatore PDF con zoom e scroll
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+// Configurazione worker PDF.js
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 /**
  * MAPPING CLAUSOLE
@@ -332,6 +340,8 @@ const App = () => {
   const [showFullContract, setShowFullContract] = useState(false);      // true = modal PDF visibile
   const [isClosingFullContract, setIsClosingFullContract] = useState(false); // true = animazione slide-down in corso
   const [isOpeningFullContract, setIsOpeningFullContract] = useState(false); // true = animazione slide-up completata
+  const [numPages, setNumPages] = useState(null);  // numero pagine PDF
+  const [pdfScale, setPdfScale] = useState(1.0);   // scala zoom PDF
 
   // --- OROLOGIO ---
   const [time, setTime] = useState(new Date()); // Data/ora corrente, aggiornata ogni secondo
@@ -640,8 +650,23 @@ const App = () => {
     setTimeout(() => {
       setShowFullContract(false);
       setIsClosingFullContract(false);
+      setPdfScale(1.0); // Reset zoom alla chiusura
     }, 500);
   };
+
+  // ==========================================================================
+  // HANDLER: PDF Document Load
+  // ==========================================================================
+  const onDocumentLoadSuccess = useCallback(({ numPages }) => {
+    setNumPages(numPages);
+  }, []);
+
+  // ==========================================================================
+  // HANDLER: Zoom PDF
+  // ==========================================================================
+  const handleZoomIn = () => setPdfScale(prev => Math.min(prev + 0.25, 3.0));
+  const handleZoomOut = () => setPdfScale(prev => Math.max(prev - 0.25, 0.5));
+  const handleZoomReset = () => setPdfScale(1.0);
 
   // ==========================================================================
   // VARIABILI HELPER: Formattazione data/ora
@@ -1241,7 +1266,6 @@ const App = () => {
         </div>
       )}
 
-      {/* MODAL PDF - CONDIZIONI GENERALI DI CONTRATTO */}
       {showFullContract && (
         <div
           className={`fixed inset-0 z-50 bg-white flex flex-col font-bergen-mono overflow-hidden ${isClosingFullContract ? 'translate-y-full' : isOpeningFullContract ? 'translate-y-0' : 'translate-y-full'}`}
@@ -1250,48 +1274,92 @@ const App = () => {
           }}
         >
           {/* Modal Header - FIXED within Flex */}
-          <div className="z-10 p-6 border-b-2 border-black flex justify-between items-center bg-white shadow-sm">
+          <div className="z-10 p-4 md:p-6 border-b-2 border-black flex justify-between items-center bg-white shadow-sm">
             <div className="flex flex-col">
               <span className="text-[10px] uppercase tracking-widest text-gray-500">Documento Ufficiale</span>
-              <span className="text-xl font-bold tracking-tight font-neue-haas">ALUA - CONDIZIONI GENERALI DI CONTRATTO</span>
+              <span className="text-base md:text-xl font-bold tracking-tight font-neue-haas leading-tight">ALUA - CONDIZIONI GENERALI</span>
             </div>
-            <button onClick={handleCloseFullContract} className="w-12 h-12 flex items-center justify-center hover:bg-gray-100 transition-colors">
+            <button onClick={handleCloseFullContract} className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center hover:bg-gray-100 transition-colors flex-shrink-0">
               <X size={20} />
             </button>
           </div>
 
-          {/* Modal Body - PDF Viewer */}
-          <div className="flex-1 overflow-auto bg-gray-100 flex flex-col" style={{ WebkitOverflowScrolling: 'touch' }}>
-            {/* PDF Embed con Object + Fallback per Mobile */}
-            <object
-              data="/contratto.pdf"
-              type="application/pdf"
-              className="w-full flex-1 border-0"
-              style={{ minHeight: 'calc(100vh - 120px)' }}
+          {/* Toolbar Zoom */}
+          <div className="z-10 px-4 py-3 border-b border-gray-200 flex items-center justify-between bg-gray-50">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleZoomOut}
+                className="w-10 h-10 flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-100 transition-colors rounded"
+                disabled={pdfScale <= 0.5}
+              >
+                <ZoomOut size={18} />
+              </button>
+              <span className="text-xs font-bold w-14 text-center font-bergen-mono">{Math.round(pdfScale * 100)}%</span>
+              <button
+                onClick={handleZoomIn}
+                className="w-10 h-10 flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-100 transition-colors rounded"
+                disabled={pdfScale >= 3.0}
+              >
+                <ZoomIn size={18} />
+              </button>
+              <button
+                onClick={handleZoomReset}
+                className="w-10 h-10 flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-100 transition-colors rounded ml-2"
+              >
+                <RotateCw size={16} />
+              </button>
+            </div>
+            {numPages && (
+              <span className="text-[10px] uppercase tracking-widest text-gray-500">
+                {numPages} {numPages === 1 ? 'pagina' : 'pagine'}
+              </span>
+            )}
+          </div>
+
+          {/* Modal Body - PDF Viewer con react-pdf */}
+          <div
+            className="flex-1 overflow-auto bg-gray-200 p-4"
+            style={{ WebkitOverflowScrolling: 'touch' }}
+          >
+            <Document
+              file="/contratto.pdf"
+              onLoadSuccess={onDocumentLoadSuccess}
+              loading={
+                <div className="flex flex-col items-center justify-center py-20">
+                  <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin mb-4"></div>
+                  <span className="text-xs uppercase tracking-widest text-gray-500">Caricamento PDF...</span>
+                </div>
+              }
+              error={
+                <div className="flex flex-col items-center justify-center py-20 text-center">
+                  <FileText size={48} className="text-gray-400 mb-4" />
+                  <p className="text-sm text-gray-600 mb-6 font-bergen-mono uppercase tracking-widest">
+                    Errore nel caricamento del PDF.
+                  </p>
+                  <a
+                    href="/contratto.pdf"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-black text-white py-3 px-6 text-xs font-bold tracking-widest uppercase font-neue-haas hover:bg-gray-900 transition-colors"
+                  >
+                    Apri PDF in Nuova Scheda
+                  </a>
+                </div>
+              }
             >
-              {/* Fallback per browser mobile che non supportano PDF inline */}
-              <div className="flex flex-col items-center justify-center h-full p-8 text-center">
-                <FileText size={48} className="text-gray-400 mb-4" />
-                <p className="text-sm text-gray-600 mb-6 font-bergen-mono uppercase tracking-widest">
-                  Il tuo browser non supporta la visualizzazione PDF integrata.
-                </p>
-                <a
-                  href="/contratto.pdf"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-black text-white py-4 px-8 text-sm font-bold tracking-widest uppercase font-neue-haas hover:bg-gray-900 transition-colors"
-                >
-                  Apri PDF in Nuova Scheda
-                </a>
-                <a
-                  href="/contratto.pdf"
-                  download="ALUA_Condizioni_Generali.pdf"
-                  className="mt-4 text-xs uppercase tracking-widest text-gray-500 hover:text-black transition-colors underline"
-                >
-                  Oppure Scarica il PDF
-                </a>
-              </div>
-            </object>
+              {numPages && Array.from(new Array(numPages), (el, index) => (
+                <div key={`page_container_${index + 1}`} className="mb-4 bg-white shadow-lg mx-auto" style={{ width: 'fit-content' }}>
+                  <Page
+                    key={`page_${index + 1}`}
+                    pageNumber={index + 1}
+                    scale={pdfScale}
+                    renderTextLayer={true}
+                    renderAnnotationLayer={true}
+                    className="mx-auto"
+                  />
+                </div>
+              ))}
+            </Document>
           </div>
         </div>
       )}
