@@ -1356,8 +1356,9 @@ const App = () => {
                           key={`page_${index + 1}`}
                           pageNumber={index + 1}
                           width={containerWidth}
-                          renderTextLayer={false}
-                          renderAnnotationLayer={false}
+                          renderTextLayer={true}
+                          renderAnnotationLayer={true}
+                          devicePixelRatio={window.devicePixelRatio || 2} // Massima nitidezza su retina
                           className="mx-auto"
                         />
                       </div>
