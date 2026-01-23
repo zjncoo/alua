@@ -12,7 +12,7 @@
 // React: libreria principale per creare interfacce utente
 // useState: hook per gestire lo stato dei componenti (es. showContract, partyA)
 // useEffect: hook per eseguire effetti collaterali (es. timer, fetch dati da URL)
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 // Lucide-react: libreria di icone vettoriali usate nell'interfaccia
 // Ogni icona è un componente React (es. <FileText /> per l'icona documento)
@@ -22,6 +22,9 @@ import { AlertTriangle, FileText, ArrowRight, ShieldCheck, Activity, Users, Serv
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/Page/AnnotationLayer.css';
 import 'react-pdf/dist/Page/TextLayer.css';
+
+// React-Zoom-Pan-Pinch: per pinch-to-zoom su mobile
+import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pan-pinch';
 
 // Configurazione worker PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -341,7 +344,8 @@ const App = () => {
   const [isClosingFullContract, setIsClosingFullContract] = useState(false); // true = animazione slide-down in corso
   const [isOpeningFullContract, setIsOpeningFullContract] = useState(false); // true = animazione slide-up completata
   const [numPages, setNumPages] = useState(null);  // numero pagine PDF
-  const [pdfScale, setPdfScale] = useState(1.0);   // scala zoom PDF
+  const [containerWidth, setContainerWidth] = useState(null); // larghezza container PDF
+  const pdfContainerRef = useRef(null); // ref per misurare il container
 
   // --- OROLOGIO ---
   const [time, setTime] = useState(new Date()); // Data/ora corrente, aggiornata ogni secondo
@@ -529,6 +533,21 @@ const App = () => {
     };
   }, [showContract, showFullContract]);
 
+  // --- EFFETTO: MISURA LARGHEZZA CONTAINER PDF ---
+  useEffect(() => {
+    if (showFullContract && pdfContainerRef.current) {
+      const updateWidth = () => {
+        const width = pdfContainerRef.current?.clientWidth;
+        if (width) {
+          setContainerWidth(width - 32); // 32px = padding (16px * 2)
+        }
+      };
+      updateWidth();
+      window.addEventListener('resize', updateWidth);
+      return () => window.removeEventListener('resize', updateWidth);
+    }
+  }, [showFullContract]);
+
   // --- EFFETTO 2: INSTALL PROMPT CHECK ---
   useEffect(() => {
     // Verifica se l'app è già in modalità standalone (PWA installata)
@@ -650,7 +669,6 @@ const App = () => {
     setTimeout(() => {
       setShowFullContract(false);
       setIsClosingFullContract(false);
-      setPdfScale(1.0); // Reset zoom alla chiusura
     }, 500);
   };
 
@@ -660,13 +678,6 @@ const App = () => {
   const onDocumentLoadSuccess = useCallback(({ numPages }) => {
     setNumPages(numPages);
   }, []);
-
-  // ==========================================================================
-  // HANDLER: Zoom PDF
-  // ==========================================================================
-  const handleZoomIn = () => setPdfScale(prev => Math.min(prev + 0.25, 3.0));
-  const handleZoomOut = () => setPdfScale(prev => Math.max(prev - 0.25, 0.5));
-  const handleZoomReset = () => setPdfScale(1.0);
 
   // ==========================================================================
   // VARIABILI HELPER: Formattazione data/ora
@@ -1047,15 +1058,11 @@ const App = () => {
                 <span className="text-black font-bold font-neue-haas">violazione contrattuale</span>
               </div>
             ) : (
-              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white border-2 border-black p-6 w-full max-w-md text-left shadow-lg">
-                <div className="flex items-center gap-3 text-black mb-4 border-b-2 border-black pb-4">
+              <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 bg-white border-2 border-black p-4 w-full max-w-md shadow-lg mb-8">
+                <div className="flex items-center gap-3 text-black">
                   <CheckCircle size={16} />
                   <span className="text-sm font-bold uppercase tracking-widest font-neue-haas">Segnalazione Registrata</span>
                 </div>
-                <p className="font-bergen-mono text-xs text-gray-600 leading-relaxed">
-                  TOKEN: {contractData.sessionToken}<br />
-                  STATO: PROVA ACQUISITA
-                </p>
               </div>
             )}
           </div>
@@ -1273,7 +1280,7 @@ const App = () => {
             transition: 'transform 500ms cubic-bezier(0.4, 0, 0.2, 1)'
           }}
         >
-          {/* Modal Header - FIXED within Flex */}
+          {/* Modal Header */}
           <div className="z-10 p-4 md:p-6 border-b-2 border-black flex justify-between items-center bg-white shadow-sm">
             <div className="flex flex-col">
               <span className="text-[10px] uppercase tracking-widest text-gray-500">Documento Ufficiale</span>
@@ -1284,31 +1291,11 @@ const App = () => {
             </button>
           </div>
 
-          {/* Toolbar Zoom */}
-          <div className="z-10 px-4 py-3 border-b border-gray-200 flex items-center justify-between bg-gray-50">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleZoomOut}
-                className="w-10 h-10 flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-100 transition-colors rounded"
-                disabled={pdfScale <= 0.5}
-              >
-                <ZoomOut size={18} />
-              </button>
-              <span className="text-xs font-bold w-14 text-center font-bergen-mono">{Math.round(pdfScale * 100)}%</span>
-              <button
-                onClick={handleZoomIn}
-                className="w-10 h-10 flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-100 transition-colors rounded"
-                disabled={pdfScale >= 3.0}
-              >
-                <ZoomIn size={18} />
-              </button>
-              <button
-                onClick={handleZoomReset}
-                className="w-10 h-10 flex items-center justify-center border border-gray-300 bg-white hover:bg-gray-100 transition-colors rounded ml-2"
-              >
-                <RotateCw size={16} />
-              </button>
-            </div>
+          {/* Info Toolbar */}
+          <div className="z-10 px-4 py-2 border-b border-gray-200 flex items-center justify-between bg-gray-50">
+            <span className="text-[10px] uppercase tracking-widest text-gray-500">
+              Pizzica per zoomare
+            </span>
             {numPages && (
               <span className="text-[10px] uppercase tracking-widest text-gray-500">
                 {numPages} {numPages === 1 ? 'pagina' : 'pagine'}
@@ -1316,50 +1303,69 @@ const App = () => {
             )}
           </div>
 
-          {/* Modal Body - PDF Viewer con react-pdf */}
+          {/* Modal Body - PDF Viewer con Pinch-to-Zoom */}
           <div
-            className="flex-1 overflow-auto bg-gray-200 p-4"
+            ref={pdfContainerRef}
+            className="flex-1 overflow-auto bg-gray-200"
             style={{ WebkitOverflowScrolling: 'touch' }}
           >
-            <Document
-              file="/contratto.pdf"
-              onLoadSuccess={onDocumentLoadSuccess}
-              loading={
-                <div className="flex flex-col items-center justify-center py-20">
-                  <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin mb-4"></div>
-                  <span className="text-xs uppercase tracking-widest text-gray-500">Caricamento PDF...</span>
-                </div>
-              }
-              error={
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                  <FileText size={48} className="text-gray-400 mb-4" />
-                  <p className="text-sm text-gray-600 mb-6 font-bergen-mono uppercase tracking-widest">
-                    Errore nel caricamento del PDF.
-                  </p>
-                  <a
-                    href="/contratto.pdf"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-black text-white py-3 px-6 text-xs font-bold tracking-widest uppercase font-neue-haas hover:bg-gray-900 transition-colors"
-                  >
-                    Apri PDF in Nuova Scheda
-                  </a>
-                </div>
-              }
+            <TransformWrapper
+              initialScale={1}
+              minScale={0.5}
+              maxScale={3}
+              centerOnInit={false}
+              wheel={{ disabled: true }}
+              pinch={{ step: 5 }}
+              doubleClick={{ mode: 'reset' }}
+              panning={{ disabled: false }}
             >
-              {numPages && Array.from(new Array(numPages), (el, index) => (
-                <div key={`page_container_${index + 1}`} className="mb-4 bg-white shadow-lg mx-auto" style={{ width: 'fit-content' }}>
-                  <Page
-                    key={`page_${index + 1}`}
-                    pageNumber={index + 1}
-                    scale={pdfScale}
-                    renderTextLayer={true}
-                    renderAnnotationLayer={true}
-                    className="mx-auto"
-                  />
+              <TransformComponent
+                wrapperStyle={{ width: '100%', height: '100%', overflow: 'auto' }}
+                contentStyle={{ width: '100%' }}
+              >
+                <div className="p-4">
+                  <Document
+                    file="/contratto.pdf"
+                    onLoadSuccess={onDocumentLoadSuccess}
+                    loading={
+                      <div className="flex flex-col items-center justify-center py-20">
+                        <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin mb-4"></div>
+                        <span className="text-xs uppercase tracking-widest text-gray-500">Caricamento PDF...</span>
+                      </div>
+                    }
+                    error={
+                      <div className="flex flex-col items-center justify-center py-20 text-center">
+                        <FileText size={48} className="text-gray-400 mb-4" />
+                        <p className="text-sm text-gray-600 mb-6 font-bergen-mono uppercase tracking-widest">
+                          Errore nel caricamento del PDF.
+                        </p>
+                        <a
+                          href="/contratto.pdf"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-black text-white py-3 px-6 text-xs font-bold tracking-widest uppercase font-neue-haas hover:bg-gray-900 transition-colors"
+                        >
+                          Apri PDF in Nuova Scheda
+                        </a>
+                      </div>
+                    }
+                  >
+                    {numPages && containerWidth && Array.from(new Array(numPages), (el, index) => (
+                      <div key={`page_container_${index + 1}`} className="mb-4 bg-white shadow-lg mx-auto" style={{ width: 'fit-content' }}>
+                        <Page
+                          key={`page_${index + 1}`}
+                          pageNumber={index + 1}
+                          width={containerWidth}
+                          renderTextLayer={false}
+                          renderAnnotationLayer={false}
+                          className="mx-auto"
+                        />
+                      </div>
+                    ))}
+                  </Document>
                 </div>
-              ))}
-            </Document>
+              </TransformComponent>
+            </TransformWrapper>
           </div>
         </div>
       )}
