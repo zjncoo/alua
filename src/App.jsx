@@ -1257,9 +1257,7 @@ const App = () => {
               </div>
             )}
 
-            <p className="text-sm leading-relaxed text-justify opacity-90 border-l-4 border-black pl-6 py-2">
-              {contractData.clausesText}
-            </p>
+
             {/* Footer Digitale */}
             <div className="pt-12 mt-8 text-center border-t-2 border-black">
               <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">
