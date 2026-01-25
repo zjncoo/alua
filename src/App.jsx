@@ -999,6 +999,18 @@ const App = () => {
           </div>
         )}
 
+        {/* MODALE CONTACT CARD (LOGIN VIEW) */}
+        {scannedMember && (
+          <ContactCard
+            member={scannedMember}
+            onClose={() => {
+              setScannedMember(null);
+              // Opzionale: pulire l'URL
+              const newUrl = window.location.pathname;
+              window.history.replaceState({}, '', newUrl);
+            }}
+          />
+        )}
       </div>
     );
   }
