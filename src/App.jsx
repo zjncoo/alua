@@ -26,6 +26,9 @@ import 'react-pdf/dist/Page/TextLayer.css';
 // React-Zoom-Pan-Pinch: per pinch-to-zoom su mobile
 import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pan-pinch';
 
+// HTML5-QRCode: per scansionare Data Matrix
+import { Html5Qrcode } from 'html5-qrcode';
+
 // Configurazione worker PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -52,6 +55,19 @@ const CLAUSE_MAPPING = {
  * Usato per convertire gli indici numerici nei tipi di relazione corrispondenti.
  */
 const RELAZIONI_KEYS = ['CONOSCENZA', 'ROMANTICA', 'LAVORATIVA', 'AMICALE', 'FAMILIARE', 'CONVIVENZA'];
+
+/**
+ * MAPPATURA MEMBRI DEL GRUPPO
+ * ---------------------------
+ * Associa il nome presente nel Data Matrix al profilo Instagram.
+ */
+const GROUP_MEMBERS = {
+  "Camilla Costato": { instagram: "ca.lcutta", url: "https://www.instagram.com/ca.lcutta/" },
+  "Francesco Zanchetta": { instagram: "zjncoo", url: "https://www.instagram.com/zjncoo/" },
+  "Camilla Vicario": { instagram: "camiivicario", url: "https://www.instagram.com/camiivicario/" },
+  "Davide Benetton": { instagram: "davidebenetton_", url: "https://www.instagram.com/davidebenetton_/" },
+  "Sofia Splendore": { instagram: "sofia.splendore", url: "https://www.instagram.com/sofia.splendore/" }
+};
 
 /**
  * ============================================================================
@@ -307,6 +323,102 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
 
 /**
  * ============================================================================
+ * COMPONENTE: ScannerModal
+ * ============================================================================
+ * Modale che apre la fotocamera per scansionare un codice Data Matrix.
+ */
+const ScannerModal = ({ onClose, onScanSuccess }) => {
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const html5QrCode = new Html5Qrcode("reader");
+    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+    html5QrCode.start(
+      { facingMode: "environment" },
+      config,
+      (decodedText, decodedResult) => {
+        // Successo
+        console.log("Scan Success:", decodedText);
+        html5QrCode.stop().then(() => {
+          onScanSuccess(decodedText);
+        }).catch(err => console.error("Error stopping scanner", err));
+      },
+      (errorMessage) => {
+        // Errore di scansione (normale mentre cerca)
+        // Non facciamo nulla per non spammare la console
+      }
+    ).catch(err => {
+      console.error("Error starting scanner", err);
+      setError("Impossibile accedere alla fotocamera. Verifica i permessi.");
+    });
+
+    return () => {
+      // Cleanup
+      if (html5QrCode.isScanning) {
+        html5QrCode.stop().catch(err => console.error("Error stopping scanner on cleanup", err));
+      }
+      // html5QrCode.clear(); // A volte causa problemi se chiamato troppo presto, stop() dovrebbe bastare
+    };
+  }, [onScanSuccess]);
+
+  return (
+    <div className="fixed inset-0 z-[60] bg-black bg-opacity-90 flex flex-col items-center justify-center p-4">
+      <div className="w-full max-w-md bg-white rounded-lg overflow-hidden relative">
+        <button onClick={onClose} className="absolute top-2 right-2 p-2 z-10 bg-white rounded-full">
+          <X size={24} className="text-black" />
+        </button>
+        <div id="reader" className="w-full h-auto min-h-[300px] bg-black"></div>
+        <div className="p-4 text-center font-bergen-mono">
+          <p className="text-sm uppercase tracking-widest text-gray-500 mb-2">Inquadra il Data Matrix</p>
+          {error && <p className="text-red-500 text-xs font-bold">{error}</p>}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * ============================================================================
+ * COMPONENTE: ContactCard
+ * ============================================================================
+ * Mostra i dettagli del contatto scansionato.
+ */
+const ContactCard = ({ member, onClose }) => {
+  if (!member) return null;
+
+  return (
+    <div className="fixed inset-0 z-[70] bg-black/80 flex items-center justify-center p-6 animate-in fade-in duration-300">
+      <div className="bg-white w-full max-w-sm p-8 border-2 border-black shadow-2xl relative flex flex-col items-center text-center font-bergen-mono">
+        <button onClick={onClose} className="absolute top-2 right-2 p-2 hover:bg-gray-100 transition-colors">
+          <X size={24} />
+        </button>
+
+        <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center mb-6">
+          <Users size={48} className="text-white" />
+        </div>
+
+        <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-2">Contatto Identificato</h3>
+        <h2 className="text-2xl font-bold uppercase mb-4 font-neue-haas">{member.name}</h2>
+
+        <div className="w-full h-px bg-gray-200 my-4"></div>
+
+        <a
+          href={member.data.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-xl font-bold hover:text-purple-600 transition-colors"
+        >
+          <span>@{member.data.instagram}</span>
+          <ArrowRight size={20} className="-rotate-45" />
+        </a>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * ============================================================================
  * COMPONENTE PRINCIPALE: App
  * ============================================================================
  * Componente root dell'applicazione. Gestisce:
@@ -373,7 +485,7 @@ const App = () => {
     cost: '0,00€',          // Costo del contratto
     weakLink: null,         // Indica chi è il contraente più "debole" (-1=nessuno, 0=A, 1=B)
     clausesText: "Dati non disponibili.", // Testo delle clausole del contratto
-    clausesText: "Dati non disponibili.", // Testo delle clausole del contratto
+
     avgScl: { a: 0, b: 0 },  // Valori medi SCL (conduttanza cutanea) per Lissajous e grafico
     relTypes: []            // Array dei tipi di relazione (es. ['ROMANTICA', 'AMICALE'])
   });
@@ -383,6 +495,10 @@ const App = () => {
   // ==========================================================================
   const [debugParams, setDebugParams] = useState({}); // Tutti i parametri URL (per debug)
   const [missingData, setMissingData] = useState(false); // true = dati mancanti nell'URL
+
+  // --- SCANNER & CONTACT CARD ---
+  const [showScanner, setShowScanner] = useState(false);
+  const [scannedMember, setScannedMember] = useState(null); // { name: string, data: object }
 
   // ==========================================================================
   // EFFETTO: SPLASH SCREEN
@@ -640,6 +756,22 @@ const App = () => {
   // Riporta il sistema in modalità monitoraggio
   const resetSystem = () => {
     setSystemStatus('MONITORING');
+  };
+
+  // HANDLER SCANNER
+  const handleScanSuccess = (decodedText) => {
+    console.log("Scanned:", decodedText);
+    const memberData = GROUP_MEMBERS[decodedText];
+
+    if (memberData) {
+      setScannedMember({ name: decodedText, data: memberData });
+      setShowScanner(false);
+    } else {
+      // Opzionale: gestire caso "Membro non trovato" o mostrare i dati raw
+      // Per ora mostriamo un alert o nulla
+      alert(`Codice scansionato: ${decodedText}\nNessun membro associato trovato.`);
+      setShowScanner(false);
+    }
   };
 
   // ==========================================================================
@@ -1111,6 +1243,17 @@ const App = () => {
             </button>
           )}
         </div>
+
+        {/* SCANNER BUTTON CONTAINER */}
+        <div className="w-full flex justify-center py-6 bg-white border-t-2 border-dashed border-gray-300">
+          <button
+            onClick={() => setShowScanner(true)}
+            className="flex items-center gap-3 px-6 py-4 bg-black text-white uppercase tracking-widest font-bold font-neue-haas text-xs hover:bg-gray-800 transition-all border-2 border-black"
+          >
+            <Users size={18} />
+            <span>Scansiona Contatto</span>
+          </button>
+        </div>
       </main>
 
       {/* Footer Fisso */}
@@ -1432,6 +1575,21 @@ const App = () => {
 
       {/* TEMPLATE NASCOSTO PER CONDIVISIONE */}
       <StoryTemplate contractData={contractData} partyA={partyA} partyB={partyB} />
+
+      {/* MODALI SCANNER */}
+      {showScanner && (
+        <ScannerModal
+          onClose={() => setShowScanner(false)}
+          onScanSuccess={handleScanSuccess}
+        />
+      )}
+
+      {scannedMember && (
+        <ContactCard
+          member={scannedMember}
+          onClose={() => setScannedMember(null)}
+        />
+      )}
     </div >
   );
 };
