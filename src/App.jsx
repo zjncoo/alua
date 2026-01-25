@@ -26,9 +26,6 @@ import 'react-pdf/dist/Page/TextLayer.css';
 // React-Zoom-Pan-Pinch: per pinch-to-zoom su mobile
 import { TransformWrapper, TransformComponent, useControls } from 'react-zoom-pan-pinch';
 
-// HTML5-QRCode: per scansionare Data Matrix
-import { Html5Qrcode } from 'html5-qrcode';
-
 // Configurazione worker PDF.js
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -59,7 +56,7 @@ const RELAZIONI_KEYS = ['CONOSCENZA', 'ROMANTICA', 'LAVORATIVA', 'AMICALE', 'FAM
 /**
  * MAPPATURA MEMBRI DEL GRUPPO
  * ---------------------------
- * Associa il nome presente nel Data Matrix al profilo Instagram.
+ * Associa il nome presente nel parametro URL 'contact' al profilo Instagram.
  */
 const GROUP_MEMBERS = {
   "Camilla Costato": { instagram: "ca.lcutta", url: "https://www.instagram.com/ca.lcutta/" },
@@ -323,66 +320,9 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
 
 /**
  * ============================================================================
- * COMPONENTE: ScannerModal
- * ============================================================================
- * Modale che apre la fotocamera per scansionare un codice Data Matrix.
- */
-const ScannerModal = ({ onClose, onScanSuccess }) => {
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const html5QrCode = new Html5Qrcode("reader");
-    const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-
-    html5QrCode.start(
-      { facingMode: "environment" },
-      config,
-      (decodedText, decodedResult) => {
-        // Successo
-        console.log("Scan Success:", decodedText);
-        html5QrCode.stop().then(() => {
-          onScanSuccess(decodedText);
-        }).catch(err => console.error("Error stopping scanner", err));
-      },
-      (errorMessage) => {
-        // Errore di scansione (normale mentre cerca)
-        // Non facciamo nulla per non spammare la console
-      }
-    ).catch(err => {
-      console.error("Error starting scanner", err);
-      setError("Impossibile accedere alla fotocamera. Verifica i permessi.");
-    });
-
-    return () => {
-      // Cleanup
-      if (html5QrCode.isScanning) {
-        html5QrCode.stop().catch(err => console.error("Error stopping scanner on cleanup", err));
-      }
-      // html5QrCode.clear(); // A volte causa problemi se chiamato troppo presto, stop() dovrebbe bastare
-    };
-  }, [onScanSuccess]);
-
-  return (
-    <div className="fixed inset-0 z-[60] bg-black bg-opacity-90 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-lg overflow-hidden relative">
-        <button onClick={onClose} className="absolute top-2 right-2 p-2 z-10 bg-white rounded-full">
-          <X size={24} className="text-black" />
-        </button>
-        <div id="reader" className="w-full h-auto min-h-[300px] bg-black"></div>
-        <div className="p-4 text-center font-bergen-mono">
-          <p className="text-sm uppercase tracking-widest text-gray-500 mb-2">Inquadra il Data Matrix</p>
-          {error && <p className="text-red-500 text-xs font-bold">{error}</p>}
-        </div>
-      </div>
-    </div>
-  );
-};
-
-/**
- * ============================================================================
  * COMPONENTE: ContactCard
  * ============================================================================
- * Mostra i dettagli del contatto scansionato.
+ * Mostra i dettagli del contatto (aperto via URL o altro).
  */
 const ContactCard = ({ member, onClose }) => {
   if (!member) return null;
@@ -398,7 +338,7 @@ const ContactCard = ({ member, onClose }) => {
           <Users size={48} className="text-white" />
         </div>
 
-        <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-2">Contatto Identificato</h3>
+        <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-2">Membro del Team</h3>
         <h2 className="text-2xl font-bold uppercase mb-4 font-neue-haas">{member.name}</h2>
 
         <div className="w-full h-px bg-gray-200 my-4"></div>
@@ -496,8 +436,7 @@ const App = () => {
   const [debugParams, setDebugParams] = useState({}); // Tutti i parametri URL (per debug)
   const [missingData, setMissingData] = useState(false); // true = dati mancanti nell'URL
 
-  // --- SCANNER & CONTACT CARD ---
-  const [showScanner, setShowScanner] = useState(false);
+  // --- CONTACT CARD (URL TRIGGERED) ---
   const [scannedMember, setScannedMember] = useState(null); // { name: string, data: object }
 
   // ==========================================================================
@@ -613,7 +552,24 @@ const App = () => {
     // CHECK DATA PRESENCE
     // Se comp non c'è, significa che stiamo usando i default.
     if (!params.get('comp')) {
-      setMissingData(true);
+      // Ma se c'è 'contact', non è un errore, è una card personale
+      if (!params.get('contact')) {
+        setMissingData(true);
+      }
+    }
+
+    // --- CHECK PARAMETRO CONTACT (QR CARD PERSONALE) ---
+    const contactName = params.get('contact');
+    if (contactName) {
+      const memberData = GROUP_MEMBERS[contactName];
+      if (memberData) {
+        setScannedMember({ name: contactName, data: memberData });
+        // Se apro un contatto, voglio vedere subito la dashboard o restare su login? 
+        // Proviamo a restare su login ma col modal sopra, o switchare a dashboard se ha senso.
+        // Per ora: Apparirà il modal sopra qualunque vista (è z-[70]).
+        // Ma per pulizia, potremmo nascondere lo splash subito?
+        setShowSplash(false);
+      }
     }
 
     if (urlPartyA && urlPartyB) {
@@ -756,22 +712,6 @@ const App = () => {
   // Riporta il sistema in modalità monitoraggio
   const resetSystem = () => {
     setSystemStatus('MONITORING');
-  };
-
-  // HANDLER SCANNER
-  const handleScanSuccess = (decodedText) => {
-    console.log("Scanned:", decodedText);
-    const memberData = GROUP_MEMBERS[decodedText];
-
-    if (memberData) {
-      setScannedMember({ name: decodedText, data: memberData });
-      setShowScanner(false);
-    } else {
-      // Opzionale: gestire caso "Membro non trovato" o mostrare i dati raw
-      // Per ora mostriamo un alert o nulla
-      alert(`Codice scansionato: ${decodedText}\nNessun membro associato trovato.`);
-      setShowScanner(false);
-    }
   };
 
   // ==========================================================================
@@ -1243,17 +1183,6 @@ const App = () => {
             </button>
           )}
         </div>
-
-        {/* SCANNER BUTTON CONTAINER */}
-        <div className="w-full flex justify-center py-6 bg-white border-t-2 border-dashed border-gray-300">
-          <button
-            onClick={() => setShowScanner(true)}
-            className="flex items-center gap-3 px-6 py-4 bg-black text-white uppercase tracking-widest font-bold font-neue-haas text-xs hover:bg-gray-800 transition-all border-2 border-black"
-          >
-            <Users size={18} />
-            <span>Scansiona Contatto</span>
-          </button>
-        </div>
       </main>
 
       {/* Footer Fisso */}
@@ -1576,18 +1505,16 @@ const App = () => {
       {/* TEMPLATE NASCOSTO PER CONDIVISIONE */}
       <StoryTemplate contractData={contractData} partyA={partyA} partyB={partyB} />
 
-      {/* MODALI SCANNER */}
-      {showScanner && (
-        <ScannerModal
-          onClose={() => setShowScanner(false)}
-          onScanSuccess={handleScanSuccess}
-        />
-      )}
-
+      {/* MODALE CONTACT CARD */}
       {scannedMember && (
         <ContactCard
           member={scannedMember}
-          onClose={() => setScannedMember(null)}
+          onClose={() => {
+            setScannedMember(null);
+            // Opzionale: pulire l'URL
+            const newUrl = window.location.pathname;
+            window.history.replaceState({}, '', newUrl);
+          }}
         />
       )}
     </div >
