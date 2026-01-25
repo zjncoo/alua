@@ -375,7 +375,11 @@ const App = () => {
   // Ogni useState ritorna [valore, funzionePerModificarlo]
 
   // --- SPLASH SCREEN ---
-  const [showSplash, setShowSplash] = useState(true);   // true = mostra splash, false = nascosto
+  // Se c'è un contatto nell'URL, saltiamo lo splash screen per mostrare subito la card
+  const [showSplash, setShowSplash] = useState(() => {
+    const p = new URLSearchParams(window.location.search);
+    return !p.get('contact');
+  });
   const [splashFading, setSplashFading] = useState(false); // true = animazione fade-out in corso
   const [contentVisible, setContentVisible] = useState(false); // true = contenuto app visibile (per fade-in)
 
@@ -561,14 +565,13 @@ const App = () => {
     // --- CHECK PARAMETRO CONTACT (QR CARD PERSONALE) ---
     const contactName = params.get('contact');
     if (contactName) {
-      const memberData = GROUP_MEMBERS[contactName];
+      // Ricerca Case-Insensitive
+      const matchedKey = Object.keys(GROUP_MEMBERS).find(k => k.toLowerCase() === contactName.trim().toLowerCase());
+      const memberData = matchedKey ? GROUP_MEMBERS[matchedKey] : null;
+
       if (memberData) {
-        setScannedMember({ name: contactName, data: memberData });
-        // Se apro un contatto, voglio vedere subito la dashboard o restare su login? 
-        // Proviamo a restare su login ma col modal sopra, o switchare a dashboard se ha senso.
-        // Per ora: Apparirà il modal sopra qualunque vista (è z-[70]).
-        // Ma per pulizia, potremmo nascondere lo splash subito?
-        setShowSplash(false);
+        setScannedMember({ name: matchedKey, data: memberData });
+        setShowSplash(false); // Assicura che lo splash sia spento
       }
     }
 
