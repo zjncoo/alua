@@ -340,7 +340,7 @@ const ContactCard = ({ member, onClose }) => {
             <img
               src={member.data.image}
               alt={member.name}
-              className="w-full h-full object-cover filter grayscale contrast-125"
+              className="w-full h-full object-cover object-top"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-black">
