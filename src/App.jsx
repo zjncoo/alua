@@ -330,12 +330,13 @@ const ContactCard = ({ member, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-[70] bg-black/80 flex items-center justify-center p-6 animate-in fade-in duration-300">
-      <div className="bg-white w-full max-w-sm p-8 border-2 border-black shadow-2xl relative flex flex-col items-center text-center font-bergen-mono">
-        <button onClick={onClose} className="absolute top-2 right-2 p-2 hover:bg-gray-100 transition-colors z-10">
-          <X size={24} />
+      <div className="bg-white w-full max-w-sm border-2 border-black shadow-2xl relative flex flex-col font-bergen-mono">
+        <button onClick={onClose} className="absolute top-2 right-2 p-2 bg-white hover:bg-gray-100 transition-colors z-10 rounded-full">
+          <X size={24} color="black" />
         </button>
 
-        <div className="w-64 h-64 bg-gray-100 mb-6 border-2 border-black overflow-hidden relative">
+        {/* PHOTO CONTAINER - Full Width */}
+        <div className="w-full aspect-square bg-gray-100 border-b-2 border-black overflow-hidden relative">
           {member.data.image ? (
             <img
               src={member.data.image}
@@ -349,20 +350,21 @@ const ContactCard = ({ member, onClose }) => {
           )}
         </div>
 
-        <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-2">Membro del Team</h3>
-        <h2 className="text-2xl font-bold uppercase mb-4 font-neue-haas">{member.data.displayName || member.name}</h2>
+        {/* INFO CONTAINER - Left Aligned */}
+        <div className="p-8 flex flex-col items-start text-left">
+          <h3 className="text-xs uppercase tracking-widest text-gray-400 mb-1">Membro del Team</h3>
+          <h2 className="text-2xl font-bold uppercase mb-6 font-neue-haas leading-tight">{member.data.displayName || member.name}</h2>
 
-        <div className="w-full h-px bg-gray-200 my-4"></div>
-
-        <a
-          href={member.data.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center gap-2 text-xl font-bold hover:text-purple-600 transition-colors"
-        >
-          <span>@{member.data.instagram}</span>
-          <ArrowRight size={20} className="-rotate-45" />
-        </a>
+          <a
+            href={member.data.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full border-2 border-black py-4 px-6 flex items-center justify-between hover:bg-black hover:text-white transition-all group"
+          >
+            <span className="font-bold uppercase tracking-widest text-sm">@{member.data.instagram}</span>
+            <ArrowRight size={20} className="-rotate-45 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+          </a>
+        </div>
       </div>
     </div>
   );
