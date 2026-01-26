@@ -59,11 +59,12 @@ const RELAZIONI_KEYS = ['CONOSCENZA', 'ROMANTICA', 'LAVORATIVA', 'AMICALE', 'FAM
  * Associa il nome presente nel parametro URL 'contact' al profilo Instagram.
  */
 const GROUP_MEMBERS = {
-  "Camilla Costato": { instagram: "ca.lcutta", url: "https://www.instagram.com/ca.lcutta/" },
-  "Francesco Zanchetta": { instagram: "zjncoo", url: "https://www.instagram.com/zjncoo/" },
-  "Camilla Vicario": { instagram: "camiivicario", url: "https://www.instagram.com/camiivicario/" },
-  "Davide Benetton": { instagram: "davidebenetton_", url: "https://www.instagram.com/davidebenetton_/" },
-  "Sofia Splendore": { instagram: "sofia.splendore", url: "https://www.instagram.com/sofia.splendore/" }
+  "Camilla Costato": { instagram: "ca.lcutta", url: "https://www.instagram.com/ca.lcutta/", image: "/mugshots/CamillaCostato.webp" },
+  "Francesco Zanchetta": { instagram: "zjncoo", url: "https://www.instagram.com/zjncoo/", image: "/mugshots/FrancescoZanchetta.webp" },
+  "Camilla Vicario": { instagram: "camiivicario", url: "https://www.instagram.com/camiivicario/", image: "/mugshots/CamillaVicario.webp" },
+  "Davide Benetton": { instagram: "davidebenetton_", url: "https://www.instagram.com/davidebenetton_/", image: "/mugshots/DavideBenetton.webp" },
+  "Sofia Splendore": { instagram: "sofia.splendore", url: "https://www.instagram.com/sofia.splendore/", image: "/mugshots/SofiaSplendore.webp" },
+  "Alice DAndrea": { instagram: "alicee.dandrea", url: "https://www.instagram.com/alicee.dandrea/", displayName: "Alice D'Andrea", image: "/mugshots/AliceDAndrea.webp" }
 };
 
 /**
@@ -330,16 +331,26 @@ const ContactCard = ({ member, onClose }) => {
   return (
     <div className="fixed inset-0 z-[70] bg-black/80 flex items-center justify-center p-6 animate-in fade-in duration-300">
       <div className="bg-white w-full max-w-sm p-8 border-2 border-black shadow-2xl relative flex flex-col items-center text-center font-bergen-mono">
-        <button onClick={onClose} className="absolute top-2 right-2 p-2 hover:bg-gray-100 transition-colors">
+        <button onClick={onClose} className="absolute top-2 right-2 p-2 hover:bg-gray-100 transition-colors z-10">
           <X size={24} />
         </button>
 
-        <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center mb-6">
-          <Users size={48} className="text-white" />
+        <div className="w-64 h-64 bg-gray-100 mb-6 border-2 border-black overflow-hidden relative">
+          {member.data.image ? (
+            <img
+              src={member.data.image}
+              alt={member.name}
+              className="w-full h-full object-cover filter grayscale contrast-125"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-black">
+              <Users size={64} className="text-white" />
+            </div>
+          )}
         </div>
 
         <h3 className="text-xs uppercase tracking-widest text-gray-500 mb-2">Membro del Team</h3>
-        <h2 className="text-2xl font-bold uppercase mb-4 font-neue-haas">{member.name}</h2>
+        <h2 className="text-2xl font-bold uppercase mb-4 font-neue-haas">{member.data.displayName || member.name}</h2>
 
         <div className="w-full h-px bg-gray-200 my-4"></div>
 
