@@ -184,7 +184,7 @@ const formatItalianText = (text) => {
   if (!text) return "";
 
   // Parole dopo le quali NON si deve andare a capo (articoli, preposizioni, congiunzioni)
-  /** const noBreakAfter = [
+  const noBreakAfter = [
     'il', 'lo', 'la', 'i', 'gli', 'le', 'l',        // Articoli determinativi
     'un', 'uno', 'una',                               // Articoli indeterminativi
     'di', 'a', 'da', 'in', 'con', 'su', 'per', 'tra', 'fra', // Preposizioni semplici
@@ -196,7 +196,7 @@ const formatItalianText = (text) => {
     'e', 'o', 'ma', 'che', 'se', 'come', 'quando',   // Congiunzioni
     'non', 'più', 'già', 'mai', 'sempre',             // Avverbi comuni
     'un\'', 'quest\'', 'quell\'', 'all\'', 'dall\'', 'nell\'', 'sull\'' // Elisioni
-  ]; */
+  ];
 
   // Crea regex per ogni parola (case insensitive, seguito da spazio)
   let result = text;
@@ -210,8 +210,9 @@ const formatItalianText = (text) => {
   // Evita a capo prima della punteggiatura
   result = result.replace(/\s+([.,;:!?])/g, '\u00A0$1');
 
-  // Il testo si adatterà responsivamente alla larghezza dello schermo
-  // grazie a whitespace-normal nel CSS
+  // --- ANTI-VEDOVE: Ogni frase va a capo ---
+  // Dopo punto, punto esclamativo o interrogativo seguito da spazio, inserisce un a capo
+  result = result.replace(/([.!?])\s+/g, '$1\n');
 
   return result;
 };
@@ -295,7 +296,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         {/* PHRASE (Wider format & Left Aligned - PUSHED TO BOTTOM) */}
         {contractData.phrase && (
           <div className="text-left px-4 w-full mt-auto mb-4">
-            <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-black whitespace-normal">
+            <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-black whitespace-pre-line">
               "{formatItalianText(contractData.phrase)}"
             </span>
           </div>
@@ -1075,7 +1076,7 @@ const App = () => {
             </div>
 
             <div className="text-left max-w-lg">
-              <span className="font-bergen-mono text-[16pt] font-bold uppercase leading-tight block text-black whitespace-normal">
+              <span className="font-bergen-mono text-[16pt] font-bold uppercase leading-tight block text-black whitespace-pre-line">
                 {formatItalianText(contractData.phrase)}
               </span>
             </div>
