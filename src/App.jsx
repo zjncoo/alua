@@ -184,7 +184,7 @@ const formatItalianText = (text) => {
   if (!text) return "";
 
   // Parole dopo le quali NON si deve andare a capo (articoli, preposizioni, congiunzioni)
-  const noBreakAfter = [
+  /** const noBreakAfter = [
     'il', 'lo', 'la', 'i', 'gli', 'le', 'l',        // Articoli determinativi
     'un', 'uno', 'una',                               // Articoli indeterminativi
     'di', 'a', 'da', 'in', 'con', 'su', 'per', 'tra', 'fra', // Preposizioni semplici
@@ -196,7 +196,7 @@ const formatItalianText = (text) => {
     'e', 'o', 'ma', 'che', 'se', 'come', 'quando',   // Congiunzioni
     'non', 'più', 'già', 'mai', 'sempre',             // Avverbi comuni
     'un\'', 'quest\'', 'quell\'', 'all\'', 'dall\'', 'nell\'', 'sull\'' // Elisioni
-  ];
+  ]; */
 
   // Crea regex per ogni parola (case insensitive, seguito da spazio)
   let result = text;
