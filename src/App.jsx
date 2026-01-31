@@ -210,9 +210,8 @@ const formatItalianText = (text) => {
   // Evita a capo prima della punteggiatura
   result = result.replace(/\s+([.,;:!?])/g, '\u00A0$1');
 
-  // --- ANTI-VEDOVE: Ogni frase va a capo ---
-  // Dopo punto, punto esclamativo o interrogativo seguito da spazio, inserisce un a capo
-  result = result.replace(/([.!?])\s+/g, '$1\n');
+  // Il testo si adatterà responsivamente alla larghezza dello schermo
+  // grazie a whitespace-normal nel CSS
 
   return result;
 };
@@ -296,7 +295,7 @@ const StoryTemplate = ({ contractData, partyA, partyB }) => {
         {/* PHRASE (Wider format & Left Aligned - PUSHED TO BOTTOM) */}
         {contractData.phrase && (
           <div className="text-left px-4 w-full mt-auto mb-4">
-            <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-black whitespace-pre-line">
+            <span className="font-bergen-mono text-[40px] uppercase font-bold leading-tight block text-black whitespace-normal">
               "{formatItalianText(contractData.phrase)}"
             </span>
           </div>
@@ -1076,7 +1075,7 @@ const App = () => {
             </div>
 
             <div className="text-left max-w-lg">
-              <span className="font-bergen-mono text-[16pt] font-bold uppercase leading-tight block text-black whitespace-pre-line">
+              <span className="font-bergen-mono text-[16pt] font-bold uppercase leading-tight block text-black whitespace-normal">
                 {formatItalianText(contractData.phrase)}
               </span>
             </div>
