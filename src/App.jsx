@@ -1075,13 +1075,14 @@ const App = () => {
               />
             </div>
 
-            <div className="text-left max-w-lg w-full">
+            <div className="text-left w-full">
               <span
                 className="font-bergen-mono text-[14pt] font-bold uppercase leading-tight block text-black"
                 style={{
                   wordBreak: 'normal',
                   overflowWrap: 'break-word',
-                  hyphens: 'none'
+                  hyphens: 'none',
+                  whiteSpace: 'normal'
                 }}
               >
                 {formatItalianText(contractData.phrase)}
