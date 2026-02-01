@@ -1075,8 +1075,15 @@ const App = () => {
               />
             </div>
 
-            <div className="text-left max-w-lg">
-              <span className="font-bergen-mono text-[16pt] font-bold uppercase leading-tight block text-black whitespace-pre-line">
+            <div className="text-left max-w-lg w-full">
+              <span
+                className="font-bergen-mono text-[14pt] font-bold uppercase leading-tight block text-black"
+                style={{
+                  wordBreak: 'normal',
+                  overflowWrap: 'break-word',
+                  hyphens: 'none'
+                }}
+              >
                 {formatItalianText(contractData.phrase)}
               </span>
             </div>
